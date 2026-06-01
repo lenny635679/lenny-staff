@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LENNY 員工管理系統</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=Oswald:wght@400;600;700&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0d0d0d;--s1:#161616;--s2:#1e1e1e;--s3:#252525;
+  --bd:#2a2a2a;--gold:#c9a84c;--gl:#e8c96a;--gd:rgba(201,168,76,.15);
+  --tx:#f0ece4;--td:#8a8070;--tm:#555;
+  --green:#4caf7d;--red:#e05c5c;--blue:#5b9bd5;
+  --orange:#e8954a;--purple:#9b7fd4;--teal:#4ab8b8;
+}
+body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;overflow-x:hidden}
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:var(--s1)}
+::-webkit-scrollbar-thumb{background:var(--bd);border-radius:3px}
+.hdr{background:linear-gradient(135deg,#0d0d0d,#1a1508);border-bottom:1px solid var(--bd);padding:14px 26px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 4px 24px rgba(0,0,0,.5)}
+.hdr-logo{font-family:'Oswald',sans-serif;font-size:19px;font-weight:700;letter-spacing:3px;color:var(--gold)}
+.hdr-sub{font-size:10px;letter-spacing:2px;color:var(--tm);margin-top:2px}
+.hdr-stats{display:flex;gap:18px}
+.stat .num{font-family:'Oswald',sans-serif;font-size:19px;font-weight:600;color:var(--gold);line-height:1;text-align:center}
+.stat .lbl{font-size:10px;letter-spacing:1px;color:var(--tm);margin-top:2px}
+.sync-dot{width:7px;height:7px;border-radius:50%;background:var(--tm);display:inline-block;margin-left:8px;vertical-align:middle;transition:background .3s}
+.sync-dot.saving{background:var(--orange);animation:pulse .7s infinite}
+.sync-dot.saved{background:var(--green)}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.main{padding:20px 26px;max-width:1500px;margin:0 auto}
+.tabs{display:flex;gap:3px;margin-bottom:16px;background:var(--s1);padding:3px;border-radius:10px;border:1px solid var(--bd);flex-wrap:wrap}
+.tab{flex:1;min-width:78px;padding:8px 9px;border:none;border-radius:7px;cursor:pointer;font-family:'Noto Sans TC',sans-serif;font-size:11px;font-weight:500;letter-spacing:.3px;transition:all .15s;white-space:nowrap;text-align:center;background:transparent;color:var(--tm)}
+.tab:hover{background:var(--s2);color:var(--tx)}
+.tab.on{background:var(--gold);color:#0d0d0d;font-weight:700}
+.tab .c{display:inline-block;background:var(--s3);border-radius:10px;padding:1px 6px;font-size:10px;margin-left:3px}
+.tab.on .c{background:rgba(0,0,0,.2)}
+.sh{display:flex;align-items:center;justify-content:space-between;margin-bottom:13px}
+.st{font-family:'Oswald',sans-serif;font-size:12px;letter-spacing:3px;color:var(--tm);text-transform:uppercase}
+.st span{color:var(--gold);margin-right:6px}
+.btn-add{background:var(--gold);color:#0d0d0d;border:none;padding:8px 15px;border-radius:7px;font-family:'Noto Sans TC',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all .15s}
+.btn-add:hover{background:var(--gl);transform:translateY(-1px)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:13px}
+.card{background:var(--s1);border:1px solid var(--bd);border-radius:12px;overflow:hidden;transition:all .2s}
+.card:hover{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold),0 8px 28px rgba(0,0,0,.4)}
+.card-acc{height:3px}
+.card-body{padding:14px 16px}
+.card-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:9px}
+.name{font-family:'Oswald',sans-serif;font-size:18px;font-weight:600}
+.sub{font-size:11px;color:var(--td);margin-top:2px}
+.badge{padding:3px 8px;border-radius:20px;font-size:10px;font-weight:700;letter-spacing:.8px;white-space:nowrap}
+.meta{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px}
+.ml{font-size:9px;color:var(--tm);letter-spacing:1px;margin-bottom:1px}
+.mv{font-size:11px;color:var(--td);font-weight:500}
+.jobs{background:var(--s2);border-radius:7px;padding:7px 9px;margin-bottom:10px}
+.jl{font-size:9px;color:var(--tm);letter-spacing:1px;margin-bottom:4px}
+.tag{display:inline-block;background:var(--s3);border:1px solid var(--bd);border-radius:4px;padding:2px 6px;font-size:10px;color:var(--td);margin:1px 2px 1px 0}
+.note{font-size:11px;color:var(--tm);margin-bottom:9px;padding:6px 8px;background:var(--s2);border-radius:5px;border-left:2px solid var(--gold)}
+.hrs-box{background:var(--s2);border-radius:7px;padding:7px 9px;margin-bottom:10px}
+.hrs-title{font-size:9px;color:var(--tm);letter-spacing:1px;margin-bottom:5px}
+.hrs-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:4px}
+.hr-entry{background:var(--s3);border-radius:4px;padding:3px 5px;text-align:center}
+.hr-m{font-size:9px;color:var(--tm)}
+.hr-v{font-size:12px;font-weight:700;color:var(--blue);font-family:'Oswald',sans-serif}
+.acts{display:flex;gap:5px;flex-wrap:wrap}
+.act{flex:1;min-width:66px;padding:5px 7px;border-radius:5px;border:1px solid var(--bd);background:var(--s2);color:var(--td);font-size:10px;font-weight:600;cursor:pointer;font-family:'Noto Sans TC',sans-serif;transition:all .15s;text-align:center;white-space:nowrap}
+.act:hover{background:var(--s3);color:var(--tx)}
+.act.hire{border-color:var(--green);color:var(--green)}.act.hire:hover{background:rgba(76,175,125,.1)}
+.act.rej{border-color:var(--red);color:var(--red)}.act.rej:hover{background:rgba(224,92,92,.1)}
+.act.trn{border-color:var(--teal);color:var(--teal)}.act.trn:hover{background:rgba(74,184,184,.1)}
+.act.prb{border-color:var(--orange);color:var(--orange)}.act.prb:hover{background:rgba(232,149,74,.1)}
+.act.pass{border-color:var(--green);color:var(--green)}.act.pass:hover{background:rgba(76,175,125,.1)}
+.act.fail{border-color:var(--red);color:var(--red)}.act.fail:hover{background:rgba(224,92,92,.1)}
+.act.hrs{border-color:var(--blue);color:var(--blue)}.act.hrs:hover{background:rgba(91,155,213,.1)}
+.act.edt{border-color:var(--gold);color:var(--gold)}.act.edt:hover{background:var(--gd)}
+.empty{text-align:center;padding:60px 20px;color:var(--tm);grid-column:1/-1}
+.mbg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.78);z-index:200;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
+.mbg.open{display:flex}
+.modal{background:var(--s1);border:1px solid var(--bd);border-radius:14px;width:510px;max-width:95vw;max-height:90vh;overflow-y:auto;padding:22px 22px 18px;box-shadow:0 24px 64px rgba(0,0,0,.7)}
+.mt{font-family:'Oswald',sans-serif;font-size:18px;letter-spacing:2px;color:var(--gold);margin-bottom:18px}
+.fr{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-bottom:11px}
+.fr.full{grid-template-columns:1fr}
+.fg{display:flex;flex-direction:column;gap:4px}
+.fg label{font-size:10px;letter-spacing:1px;color:var(--td);text-transform:uppercase}
+.fg input,.fg select,.fg textarea{background:var(--s2);border:1px solid var(--bd);border-radius:7px;padding:7px 10px;color:var(--tx);font-family:'Noto Sans TC',sans-serif;font-size:13px;outline:none;transition:border-color .15s;width:100%}
+.fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--gold)}
+.fg select option{background:var(--s2)}
+.fg textarea{resize:vertical;min-height:58px}
+.ma{display:flex;justify-content:flex-end;gap:9px;margin-top:16px;padding-top:13px;border-top:1px solid var(--bd)}
+.btn-c{padding:7px 16px;border:1px solid var(--bd);background:none;color:var(--td);border-radius:7px;cursor:pointer;font-family:'Noto Sans TC',sans-serif;font-size:12px}
+.btn-c:hover{background:var(--s2)}
+.btn-s{padding:7px 20px;background:var(--gold);border:none;color:#0d0d0d;border-radius:7px;cursor:pointer;font-family:'Noto Sans TC',sans-serif;font-size:13px;font-weight:700}
+.btn-s:hover{background:var(--gl)}
+#lo{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:14px;z-index:999;transition:opacity .3s}
+#lo.h{opacity:0;pointer-events:none}
+.spin{width:32px;height:32px;border:3px solid var(--bd);border-top-color:var(--gold);border-radius:50%;animation:sp .8s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+#cfg-banner{background:#1a1508;border:1px solid var(--gold);border-radius:10px;padding:14px 18px;margin-bottom:18px;font-size:13px;color:var(--td);line-height:1.7;display:none}
+#cfg-banner.show{display:block}
+#cfg-banner strong{color:var(--gold)}
+@media(max-width:580px){.main{padding:12px}.hdr{padding:11px 14px}.hdr-stats{gap:11px}.fr{grid-template-columns:1fr}.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<div id="lo"><div class="spin"></div><div style="font-size:12px;letter-spacing:2px;color:var(--tm)">連接資料庫中...</div></div>
+
+<div class="hdr">
+  <div>
+    <div class="hdr-logo">LENNY · 員工管理 <span class="sync-dot" id="sync-dot"></span></div>
+    <div class="hdr-sub">STAFF MANAGEMENT SYSTEM</div>
+  </div>
+  <div class="hdr-stats">
+    <div class="stat"><div class="num" id="s-total">0</div><div class="lbl">總人數</div></div>
+    <div class="stat"><div class="num" id="s-active">0</div><div class="lbl">在職</div></div>
+    <div class="stat"><div class="num" id="s-train">0</div><div class="lbl">培訓中</div></div>
+    <div class="stat"><div class="num" id="s-prob">0</div><div class="lbl">試用中</div></div>
+  </div>
+</div>
+
+<div class="main">
+  <div id="cfg-banner">
+    ⚠️ <strong>尚未設定 Firebase</strong>，請打開 <code>index.html</code>，找到底部的 <code>firebaseConfig</code>，填入你的 Firebase 專案資訊後儲存。詳細步驟請看 <strong>教學說明.txt</strong>。
+  </div>
+
+  <div class="tabs">
+    <button class="tab on" data-tab="all">全部<span class="c" id="c-all">0</span></button>
+    <button class="tab" data-tab="pending">面試中<span class="c" id="c-pending">0</span></button>
+    <button class="tab" data-tab="hired">✅ 錄取<span class="c" id="c-hired">0</span></button>
+    <button class="tab" data-tab="training">📚 培訓中<span class="c" id="c-training">0</span></button>
+    <button class="tab" data-tab="probation">🔶 試用期<span class="c" id="c-probation">0</span></button>
+    <button class="tab" data-tab="passed">🏆 過試用期<span class="c" id="c-passed">0</span></button>
+    <button class="tab" data-tab="rejected">❌ 未錄取<span class="c" id="c-rejected">0</span></button>
+    <button class="tab" data-tab="failed_prob">⛔ 試用未過<span class="c" id="c-failed_prob">0</span></button>
+  </div>
+  <div class="sh">
+    <div class="st"><span>◆</span><span id="ptitle">所有員工</span></div>
+    <button class="btn-add" onclick="openAdd()">＋ 新增員工</button>
+  </div>
+  <div class="grid" id="grid"></div>
+</div>
+
+<!-- EDIT MODAL -->
+<div class="mbg" id="em">
+  <div class="modal">
+    <div class="mt" id="em-title">新增員工</div>
+    <div class="fr">
+      <div class="fg"><label>姓名</label><input id="f-name" placeholder="輸入姓名"></div>
+      <div class="fg"><label>性別</label><select id="f-gender"><option>男</option><option>女</option></select></div>
+    </div>
+    <div class="fr">
+      <div class="fg"><label>出生日期</label><input id="f-birth" placeholder="例：民國87年3月18日"></div>
+      <div class="fg"><label>學歷</label><select id="f-edu">
+        <option>博士</option><option>碩士</option><option>大學</option><option>專科</option>
+        <option selected>高職/高中</option><option>國中以下</option><option>其他</option>
+      </select></div>
+    </div>
+    <div class="fr">
+      <div class="fg"><label>工作年資（年）</label><input id="f-exp" placeholder="例：8"></div>
+      <div class="fg"><label>聯絡電話</label><input id="f-phone" placeholder="0912-345-678"></div>
+    </div>
+    <div class="fr full">
+      <div class="fg"><label>過去工作經歷（逗號分隔）</label><textarea id="f-jobs" placeholder="例：王品服務生, 夜店管理職, 酒店業務"></textarea></div>
+    </div>
+    <div class="fr">
+      <div class="fg"><label>希望職務</label><input id="f-pos" placeholder="例：荷官"></div>
+      <div class="fg"><label>狀態</label><select id="f-status">
+        <option value="pending">面試中</option>
+        <option value="hired">已錄取</option>
+        <option value="training">培訓中</option>
+        <option value="probation">試用期</option>
+        <option value="passed">過試用期</option>
+        <option value="rejected">未錄取</option>
+        <option value="failed_prob">試用未過</option>
+      </select></div>
+    </div>
+    <div class="fr full">
+      <div class="fg"><label>備註</label><textarea id="f-note" placeholder="面試備註、特殊技能等..."></textarea></div>
+    </div>
+    <div class="ma">
+      <button class="btn-c" onclick="closeEM()">取消</button>
+      <button class="btn-s" onclick="saveEmp()">儲存</button>
+    </div>
+  </div>
+</div>
+
+<!-- HOURS MODAL -->
+<div class="mbg" id="hm">
+  <div class="modal">
+    <div class="mt">⏱ 記錄上班時數</div>
+    <div style="font-size:13px;color:var(--td);margin-bottom:16px" id="hm-name"></div>
+    <div class="fr">
+      <div class="fg"><label>年份</label><input type="number" id="h-year"></div>
+      <div class="fg"><label>月份</label><select id="h-month">
+        <option value="1">1月</option><option value="2">2月</option><option value="3">3月</option>
+        <option value="4">4月</option><option value="5">5月</option><option value="6">6月</option>
+        <option value="7">7月</option><option value="8">8月</option><option value="9">9月</option>
+        <option value="10">10月</option><option value="11">11月</option><option value="12">12月</option>
+      </select></div>
+    </div>
+    <div class="fr full">
+      <div class="fg"><label>上班時數（小時）</label><input type="number" id="h-hrs" placeholder="例：168" min="0" max="744"></div>
+    </div>
+    <div class="ma">
+      <button class="btn-c" onclick="closeHM()">取消</button>
+      <button class="btn-s" onclick="saveHrs()">儲存時數</button>
+    </div>
+  </div>
+</div>
+
+<!-- Firebase SDK -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, collection, onSnapshot, doc, setDoc, updateDoc, deleteDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+// ════════════════════════════════════════════════════
+//  ▼▼▼  貼上你的 Firebase 設定在這裡  ▼▼▼
+// ════════════════════════════════════════════════════
+const firebaseConfig = {
+  apiKey: "AIzaSyAQGspBuwdxrvK2nuUu4HJRVFw3FAXotkI",
+  authDomain: "lenny-staff.firebaseapp.com",
+  projectId: "lenny-staff",
+  storageBucket: "lenny-staff.firebasestorage.app",
+  messagingSenderId: "123360483730",
+  appId: "1:123360483730:web:45eb20138924fb0df2c94b"
+};
+// ════════════════════════════════════════════════════
+
+const CONFIGURED = firebaseConfig.apiKey !== "YOUR_API_KEY";
+
+const SC = {
+  pending:   {label:'面試中',   color:'#5b9bd5',bg:'rgba(91,155,213,.13)',  accent:'#5b9bd5'},
+  hired:     {label:'已錄取',   color:'#4caf7d',bg:'rgba(76,175,125,.13)',  accent:'#4caf7d'},
+  training:  {label:'培訓中',   color:'#4ab8b8',bg:'rgba(74,184,184,.13)',  accent:'#4ab8b8'},
+  probation: {label:'試用期',   color:'#e8954a',bg:'rgba(232,149,74,.13)',  accent:'#e8954a'},
+  passed:    {label:'過試用期', color:'#c9a84c',bg:'rgba(201,168,76,.13)',  accent:'#c9a84c'},
+  rejected:  {label:'未錄取',   color:'#e05c5c',bg:'rgba(224,92,92,.13)',   accent:'#e05c5c'},
+  failed_prob:{label:'試用未過',color:'#9b7fd4',bg:'rgba(155,127,212,.13)', accent:'#9b7fd4'},
+};
+const TLABELS = {all:'所有員工',pending:'面試中',hired:'已錄取',training:'培訓中',probation:'試用期',passed:'通過試用期',rejected:'未錄取',failed_prob:'試用未過'};
+const INIT = [
+  {id:'e1',name:'李育魁',gender:'男',birth:'民國57年10月30日',edu:'高職/高中',school:'大望高工',dept:'電機',exp:'10',phone:'0905322103',jobs:['王品台塑 服務生','夜店(AUA) 管理職','酒店太人 業務'],position:'',status:'pending',note:'工作年資豐富，曾任酒店業務',hours:{}},
+  {id:'e2',name:'袁慧茹',gender:'女',birth:'民國90年7月12日',edu:'專科',school:'慈保高商',dept:'觀光',exp:'9',phone:'0977660877',jobs:['護心 正職調飲(4.5年)','電話行銷 業務代理(3年)','電商網路行銷 小編(1年)'],position:'PT',status:'pending',note:'大夜班可 9-18, 10-19, 2年',hours:{}},
+  {id:'e3',name:'曾瑋',gender:'男',birth:'民國84年2月27日',edu:'高職/高中',school:'東泰高中',dept:'餐飲',exp:'5',phone:'0975929327',jobs:['良華開發 佐業員(1年10月)','一詮精密 物控管理(1年7月)'],position:'',status:'pending',note:'5-6夜 19-01，78全',hours:{}},
+  {id:'e4',name:'黃采玥',gender:'女',birth:'民國87年3月18日',edu:'大學',school:'樹德科技大學',dept:'',exp:'8',phone:'0918208999',jobs:['永慶房仲 房仲(半年)','遊藝場 開分員(2年)','荷官(5年)'],position:'荷官',status:'pending',note:'工作地區三重/新北，早班，現職百家',hours:{}}
+];
+
+let emps = [];
+let curTab = 'all';
+let editId = null;
+let hrsId = null;
+let db, empCol;
+
+function syncDot(state) {
+  const d = document.getElementById('sync-dot');
+  d.className = 'sync-dot ' + (state || '');
+}
+
+function filtered() { return curTab === 'all' ? emps : emps.filter(e => e.status === curTab); }
+function count(k) { return k === 'all' ? emps.length : emps.filter(e => e.status === k).length; }
+
+function render() {
+  document.getElementById('ptitle').textContent = TLABELS[curTab] || '';
+  ['all','pending','hired','training','probation','passed','rejected','failed_prob'].forEach(t => {
+    const el = document.getElementById('c-' + t); if (el) el.textContent = count(t);
+  });
+  document.getElementById('s-total').textContent = emps.length;
+  document.getElementById('s-active').textContent = emps.filter(e => ['hired','passed'].includes(e.status)).length;
+  document.getElementById('s-train').textContent = emps.filter(e => e.status === 'training').length;
+  document.getElementById('s-prob').textContent = emps.filter(e => e.status === 'probation').length;
+
+  const list = filtered();
+  const g = document.getElementById('grid');
+  if (!list.length) { g.innerHTML = '<div class="empty"><div style="font-size:34px;margin-bottom:10px">📋</div><div style="font-size:13px;letter-spacing:1px">此區尚無員工資料</div></div>'; return; }
+  g.innerHTML = list.map(cardHTML).join('');
+}
+
+function cardHTML(e) {
+  const sc = SC[e.status] || SC.pending;
+  const hes = Object.entries(e.hours || {}).sort((a,b) => b[0].localeCompare(a[0])).slice(0,6);
+  const hrsHTML = hes.length ? `<div class="hrs-box"><div class="hrs-title">📅 上班時數記錄</div><div class="hrs-grid">${hes.map(([k,v])=>`<div class="hr-entry"><div class="hr-m">${k}</div><div class="hr-v">${v}h</div></div>`).join('')}</div></div>` : '';
+  return `<div class="card">
+    <div class="card-acc" style="background:${sc.accent}"></div>
+    <div class="card-body">
+      <div class="card-top">
+        <div><div class="name">${e.name}</div><div class="sub">${e.gender} · ${e.edu} · ${e.exp}年資</div></div>
+        <div class="badge" style="background:${sc.bg};color:${sc.color};border:1px solid ${sc.color}50">${sc.label}</div>
+      </div>
+      <div class="meta">
+        <div><div class="ml">出生</div><div class="mv">${e.birth||'—'}</div></div>
+        <div><div class="ml">電話</div><div class="mv">${e.phone||'—'}</div></div>
+        <div><div class="ml">學校</div><div class="mv">${e.school||'—'} ${e.dept||''}</div></div>
+        <div><div class="ml">希望職務</div><div class="mv">${e.position||'面議'}</div></div>
+      </div>
+      <div class="jobs"><div class="jl">工作經歷</div>${(e.jobs||[]).map(j=>`<span class="tag">${j}</span>`).join('')}</div>
+      ${e.note?`<div class="note">📝 ${e.note}</div>`:''}
+      ${hrsHTML}
+      <div class="acts">${actionBtns(e)}</div>
+    </div>
+  </div>`;
+}
+
+function ab(cls,label,fn) { return `<button class="act ${cls}" onclick="${fn}">${label}</button>`; }
+function actionBtns(e) {
+  const id = `'${e.id}'`, s = e.status, r = [];
+  if (s==='pending')    { r.push(ab('hire','✅ 錄取',`ss(${id},'hired')`)); r.push(ab('trn','📚 培訓',`ss(${id},'training')`)); r.push(ab('rej','❌ 不錄取',`ss(${id},'rejected')`)); }
+  else if(s==='hired')  { r.push(ab('trn','📚 培訓中',`ss(${id},'training')`)); r.push(ab('prb','🔶 試用期',`ss(${id},'probation')`)); r.push(ab('rej','❌ 解除',`ss(${id},'rejected')`)); }
+  else if(s==='training'){ r.push(ab('prb','🔶 轉試用',`ss(${id},'probation')`)); r.push(ab('hire','✅ 轉正職',`ss(${id},'hired')`)); r.push(ab('rej','❌ 淘汰',`ss(${id},'rejected')`)); }
+  else if(s==='probation'){ r.push(ab('pass','🏆 通過試用',`ss(${id},'passed')`)); r.push(ab('trn','📚 補培訓',`ss(${id},'training')`)); r.push(ab('fail','⛔ 未過試用',`ss(${id},'failed_prob')`)); }
+  else if(s==='passed') { r.push(ab('hire','✅ 繼續錄用',`ss(${id},'hired')`)); r.push(ab('fail','⛔ 不繼續',`ss(${id},'failed_prob')`)); }
+  else                  { r.push(ab('act','↩ 重新面試',`ss(${id},'pending')`)); }
+  r.push(ab('hrs','⏱ 時數',`openHM(${id})`));
+  r.push(ab('edt','✏️ 編輯',`openEdit(${id})`));
+  return r.join('');
+}
+
+// Firebase ops
+window.ss = async function(id, status) {
+  syncDot('saving');
+  try { await updateDoc(doc(empCol, id), { status }); syncDot('saved'); setTimeout(()=>syncDot(''),2000); }
+  catch(e) { alert('儲存失敗：'+e.message); syncDot(''); }
+};
+
+window.openAdd = function() {
+  editId = null;
+  document.getElementById('em-title').textContent = '＋ 新增員工';
+  ['f-name','f-birth','f-exp','f-phone','f-pos','f-note','f-jobs'].forEach(id => document.getElementById(id).value='');
+  document.getElementById('f-gender').value = '男';
+  document.getElementById('f-edu').value = '高職/高中';
+  document.getElementById('f-status').value = 'pending';
+  document.getElementById('em').classList.add('open');
+};
+
+window.openEdit = function(id) {
+  editId = id;
+  const e = emps.find(x => x.id === id); if (!e) return;
+  document.getElementById('em-title').textContent = '✏️ 編輯員工資料';
+  document.getElementById('f-name').value   = e.name||'';
+  document.getElementById('f-gender').value = e.gender||'男';
+  document.getElementById('f-birth').value  = e.birth||'';
+  document.getElementById('f-edu').value    = e.edu||'高職/高中';
+  document.getElementById('f-exp').value    = e.exp||'';
+  document.getElementById('f-phone').value  = e.phone||'';
+  document.getElementById('f-jobs').value   = (e.jobs||[]).join(', ');
+  document.getElementById('f-pos').value    = e.position||'';
+  document.getElementById('f-status').value = e.status||'pending';
+  document.getElementById('f-note').value   = e.note||'';
+  document.getElementById('em').classList.add('open');
+};
+
+window.closeEM = function() { document.getElementById('em').classList.remove('open'); };
+
+window.saveEmp = async function() {
+  const name = document.getElementById('f-name').value.trim();
+  if (!name) { alert('請輸入姓名'); return; }
+  syncDot('saving');
+  const data = {
+    name, gender: document.getElementById('f-gender').value,
+    birth: document.getElementById('f-birth').value,
+    edu: document.getElementById('f-edu').value,
+    exp: document.getElementById('f-exp').value,
+    phone: document.getElementById('f-phone').value,
+    jobs: document.getElementById('f-jobs').value.split(',').map(j=>j.trim()).filter(Boolean),
+    position: document.getElementById('f-pos').value,
+    status: document.getElementById('f-status').value,
+    note: document.getElementById('f-note').value,
+  };
+  try {
+    if (editId) {
+      await updateDoc(doc(empCol, editId), data);
+    } else {
+      const newId = 'e' + Date.now();
+      await setDoc(doc(empCol, newId), { id: newId, school:'', dept:'', hours:{}, ...data });
+    }
+    syncDot('saved'); setTimeout(()=>syncDot(''),2000);
+    window.closeEM();
+  } catch(err) { alert('儲存失敗：'+err.message); syncDot(''); }
+};
+
+window.openHM = function(id) {
+  hrsId = id;
+  const e = emps.find(x => x.id === id);
+  document.getElementById('hm-name').textContent = '員工：' + (e ? e.name : '');
+  const n = new Date();
+  document.getElementById('h-year').value  = n.getFullYear();
+  document.getElementById('h-month').value = n.getMonth() + 1;
+  document.getElementById('h-hrs').value   = '';
+  document.getElementById('hm').classList.add('open');
+};
+
+window.closeHM = function() { document.getElementById('hm').classList.remove('open'); };
+
+window.saveHrs = async function() {
+  const hrs = document.getElementById('h-hrs').value;
+  if (!hrs) { alert('請輸入時數'); return; }
+  const y = document.getElementById('h-year').value;
+  const m = String(document.getElementById('h-month').value).padStart(2,'0');
+  const key = `hours.${y}_${m}`;
+  syncDot('saving');
+  try {
+    await updateDoc(doc(empCol, hrsId), { [key]: parseInt(hrs) });
+    syncDot('saved'); setTimeout(()=>syncDot(''),2000);
+    window.closeHM();
+  } catch(err) { alert('儲存失敗：'+err.message); syncDot(''); }
+};
+
+// Tabs
+document.querySelectorAll('.tab').forEach(t => {
+  t.addEventListener('click', () => {
+    curTab = t.dataset.tab;
+    document.querySelectorAll('.tab').forEach(x => x.classList.remove('on'));
+    t.classList.add('on');
+    render();
+  });
+});
+document.getElementById('em').addEventListener('click', function(ev){ if(ev.target===this) window.closeEM(); });
+document.getElementById('hm').addEventListener('click', function(ev){ if(ev.target===this) window.closeHM(); });
+
+// INIT
+async function init() {
+  if (!CONFIGURED) {
+    document.getElementById('cfg-banner').classList.add('show');
+    document.getElementById('lo').classList.add('h');
+    setTimeout(() => document.getElementById('lo').style.display='none', 350);
+    return;
+  }
+  const app = initializeApp(firebaseConfig);
+  db = getFirestore(app);
+  empCol = collection(db, 'employees');
+
+  // Check if empty → seed initial data
+  const snap = await getDocs(empCol);
+  if (snap.empty) {
+    for (const e of INIT) {
+      await setDoc(doc(empCol, e.id), e);
+    }
+  }
+
+  // Real-time listener
+  onSnapshot(empCol, (snapshot) => {
+    emps = snapshot.docs.map(d => {
+      const data = d.data();
+      // Rebuild hours from flat fields
+      const hours = {};
+      Object.keys(data).forEach(k => {
+        if (k.startsWith('hours.')) {
+          const monthKey = k.replace('hours.', '').replace('_', '/');
+          hours[monthKey] = data[k];
+        }
+      });
+      return { ...data, hours: data.hours && typeof data.hours === 'object' && !Array.isArray(data.hours) ? data.hours : hours };
+    });
+    render();
+  });
+
+  document.getElementById('lo').classList.add('h');
+  setTimeout(() => document.getElementById('lo').style.display='none', 350);
+}
+
+init();
+</script>
+</body>
+</html>
