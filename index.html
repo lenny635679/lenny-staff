@@ -337,7 +337,7 @@ document.getElementById('hm').addEventListener('click',function(ev){if(ev.target
 async function init(){
   try{
     firebase.initializeApp(FIREBASE_CONFIG);
-    db=firebase.firestore();
+    db=firebase.firestore();db.settings({databaseId:'lenny-staff'});
     col=db.collection('employees');
     document.getElementById('lo-txt').textContent='檢查資料庫...';
     const snap=await col.get();
