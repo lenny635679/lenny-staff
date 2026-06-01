@@ -91,19 +91,16 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--tx);
 .btn-c:hover{background:var(--s2)}
 .btn-s{padding:7px 20px;background:var(--gold);border:none;color:#0d0d0d;border-radius:7px;cursor:pointer;font-family:'Noto Sans TC',sans-serif;font-size:13px;font-weight:700}
 .btn-s:hover{background:var(--gl)}
-#lo{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:14px;z-index:999;transition:opacity .3s}
+#lo{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:14px;z-index:999;transition:opacity .4s}
 #lo.h{opacity:0;pointer-events:none}
 .spin{width:32px;height:32px;border:3px solid var(--bd);border-top-color:var(--gold);border-radius:50%;animation:sp .8s linear infinite}
 @keyframes sp{to{transform:rotate(360deg)}}
-#cfg-banner{background:#1a1508;border:1px solid var(--gold);border-radius:10px;padding:14px 18px;margin-bottom:18px;font-size:13px;color:var(--td);line-height:1.7;display:none}
-#cfg-banner.show{display:block}
-#cfg-banner strong{color:var(--gold)}
 @media(max-width:580px){.main{padding:12px}.hdr{padding:11px 14px}.hdr-stats{gap:11px}.fr{grid-template-columns:1fr}.grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
 
-<div id="lo"><div class="spin"></div><div style="font-size:12px;letter-spacing:2px;color:var(--tm)">連接資料庫中...</div></div>
+<div id="lo"><div class="spin"></div><div style="font-size:12px;letter-spacing:2px;color:var(--tm)" id="lo-txt">連接資料庫中...</div></div>
 
 <div class="hdr">
   <div>
@@ -119,10 +116,6 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--tx);
 </div>
 
 <div class="main">
-  <div id="cfg-banner">
-    ⚠️ <strong>尚未設定 Firebase</strong>，請打開 <code>index.html</code>，找到底部的 <code>firebaseConfig</code>，填入你的 Firebase 專案資訊後儲存。詳細步驟請看 <strong>教學說明.txt</strong>。
-  </div>
-
   <div class="tabs">
     <button class="tab on" data-tab="all">全部<span class="c" id="c-all">0</span></button>
     <button class="tab" data-tab="pending">面試中<span class="c" id="c-pending">0</span></button>
@@ -208,15 +201,9 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--tx);
   </div>
 </div>
 
-<!-- Firebase SDK -->
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getFirestore, collection, onSnapshot, doc, setDoc, updateDoc, deleteDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
-// ════════════════════════════════════════════════════
-//  ▼▼▼  貼上你的 Firebase 設定在這裡  ▼▼▼
-// ════════════════════════════════════════════════════
-const firebaseConfig = {
+<script>
+// ── Firebase 設定 ──────────────────────────────────
+const FIREBASE_CONFIG = {
   apiKey: "AIzaSyAQGspBuwdxrvK2nuUu4HJRVFw3FAXotkI",
   authDomain: "lenny-staff.firebaseapp.com",
   projectId: "lenny-staff",
@@ -224,9 +211,14 @@ const firebaseConfig = {
   messagingSenderId: "123360483730",
   appId: "1:123360483730:web:45eb20138924fb0df2c94b"
 };
-// ════════════════════════════════════════════════════
+// ──────────────────────────────────────────────────
 
-const CONFIGURED = firebaseConfig.apiKey !== "YOUR_API_KEY";
+const INIT_DATA = [
+  {id:'e1',name:'李育魁',gender:'男',birth:'民國57年10月30日',edu:'高職/高中',school:'大望高工',dept:'電機',exp:'10',phone:'0905322103',jobs:['王品台塑 服務生','夜店(AUA) 管理職','酒店太人 業務'],position:'',status:'pending',note:'工作年資豐富，曾任酒店業務',hours:{}},
+  {id:'e2',name:'袁慧茹',gender:'女',birth:'民國90年7月12日',edu:'專科',school:'慈保高商',dept:'觀光',exp:'9',phone:'0977660877',jobs:['護心 正職調飲(4.5年)','電話行銷 業務代理(3年)','電商網路行銷 小編(1年)'],position:'PT',status:'pending',note:'大夜班可 9-18, 10-19, 2年',hours:{}},
+  {id:'e3',name:'曾瑋',gender:'男',birth:'民國84年2月27日',edu:'高職/高中',school:'東泰高中',dept:'餐飲',exp:'5',phone:'0975929327',jobs:['良華開發 佐業員(1年10月)','一詮精密 物控管理(1年7月)'],position:'',status:'pending',note:'5-6夜 19-01，78全',hours:{}},
+  {id:'e4',name:'黃采玥',gender:'女',birth:'民國87年3月18日',edu:'大學',school:'樹德科技大學',dept:'',exp:'8',phone:'0918208999',jobs:['永慶房仲 房仲(半年)','遊藝場 開分員(2年)','荷官(5年)'],position:'荷官',status:'pending',note:'工作地區三重/新北，早班，現職百家',hours:{}}
+];
 
 const SC = {
   pending:   {label:'面試中',   color:'#5b9bd5',bg:'rgba(91,155,213,.13)',  accent:'#5b9bd5'},
@@ -238,47 +230,44 @@ const SC = {
   failed_prob:{label:'試用未過',color:'#9b7fd4',bg:'rgba(155,127,212,.13)', accent:'#9b7fd4'},
 };
 const TLABELS = {all:'所有員工',pending:'面試中',hired:'已錄取',training:'培訓中',probation:'試用期',passed:'通過試用期',rejected:'未錄取',failed_prob:'試用未過'};
-const INIT = [
-  {id:'e1',name:'李育魁',gender:'男',birth:'民國57年10月30日',edu:'高職/高中',school:'大望高工',dept:'電機',exp:'10',phone:'0905322103',jobs:['王品台塑 服務生','夜店(AUA) 管理職','酒店太人 業務'],position:'',status:'pending',note:'工作年資豐富，曾任酒店業務',hours:{}},
-  {id:'e2',name:'袁慧茹',gender:'女',birth:'民國90年7月12日',edu:'專科',school:'慈保高商',dept:'觀光',exp:'9',phone:'0977660877',jobs:['護心 正職調飲(4.5年)','電話行銷 業務代理(3年)','電商網路行銷 小編(1年)'],position:'PT',status:'pending',note:'大夜班可 9-18, 10-19, 2年',hours:{}},
-  {id:'e3',name:'曾瑋',gender:'男',birth:'民國84年2月27日',edu:'高職/高中',school:'東泰高中',dept:'餐飲',exp:'5',phone:'0975929327',jobs:['良華開發 佐業員(1年10月)','一詮精密 物控管理(1年7月)'],position:'',status:'pending',note:'5-6夜 19-01，78全',hours:{}},
-  {id:'e4',name:'黃采玥',gender:'女',birth:'民國87年3月18日',edu:'大學',school:'樹德科技大學',dept:'',exp:'8',phone:'0918208999',jobs:['永慶房仲 房仲(半年)','遊藝場 開分員(2年)','荷官(5年)'],position:'荷官',status:'pending',note:'工作地區三重/新北，早班，現職百家',hours:{}}
-];
 
-let emps = [];
-let curTab = 'all';
-let editId = null;
-let hrsId = null;
-let db, empCol;
+let emps=[], curTab='all', editId=null, hrsId=null;
+let db, col, addDoc, setDoc, updateDoc, getDocs, onSnapshot, doc, collection;
 
-function syncDot(state) {
-  const d = document.getElementById('sync-dot');
-  d.className = 'sync-dot ' + (state || '');
+function syncDot(s){
+  const d=document.getElementById('sync-dot');
+  d.className='sync-dot '+(s||'');
 }
 
-function filtered() { return curTab === 'all' ? emps : emps.filter(e => e.status === curTab); }
-function count(k) { return k === 'all' ? emps.length : emps.filter(e => e.status === k).length; }
+function hideLo(){
+  const lo=document.getElementById('lo');
+  lo.classList.add('h');
+  setTimeout(()=>lo.style.display='none',400);
+}
 
-function render() {
-  document.getElementById('ptitle').textContent = TLABELS[curTab] || '';
-  ['all','pending','hired','training','probation','passed','rejected','failed_prob'].forEach(t => {
-    const el = document.getElementById('c-' + t); if (el) el.textContent = count(t);
+function filtered(){ return curTab==='all'?emps:emps.filter(e=>e.status===curTab); }
+function count(k){ return k==='all'?emps.length:emps.filter(e=>e.status===k).length; }
+
+function render(){
+  document.getElementById('ptitle').textContent=TLABELS[curTab]||'';
+  ['all','pending','hired','training','probation','passed','rejected','failed_prob'].forEach(t=>{
+    const el=document.getElementById('c-'+t); if(el) el.textContent=count(t);
   });
-  document.getElementById('s-total').textContent = emps.length;
-  document.getElementById('s-active').textContent = emps.filter(e => ['hired','passed'].includes(e.status)).length;
-  document.getElementById('s-train').textContent = emps.filter(e => e.status === 'training').length;
-  document.getElementById('s-prob').textContent = emps.filter(e => e.status === 'probation').length;
-
-  const list = filtered();
-  const g = document.getElementById('grid');
-  if (!list.length) { g.innerHTML = '<div class="empty"><div style="font-size:34px;margin-bottom:10px">📋</div><div style="font-size:13px;letter-spacing:1px">此區尚無員工資料</div></div>'; return; }
-  g.innerHTML = list.map(cardHTML).join('');
+  document.getElementById('s-total').textContent=emps.length;
+  document.getElementById('s-active').textContent=emps.filter(e=>['hired','passed'].includes(e.status)).length;
+  document.getElementById('s-train').textContent=emps.filter(e=>e.status==='training').length;
+  document.getElementById('s-prob').textContent=emps.filter(e=>e.status==='probation').length;
+  const list=filtered();
+  const g=document.getElementById('grid');
+  if(!list.length){g.innerHTML='<div class="empty"><div style="font-size:34px;margin-bottom:10px">📋</div><div style="font-size:13px;letter-spacing:1px">此區尚無員工資料</div></div>';return;}
+  g.innerHTML=list.map(cardHTML).join('');
 }
 
-function cardHTML(e) {
-  const sc = SC[e.status] || SC.pending;
-  const hes = Object.entries(e.hours || {}).sort((a,b) => b[0].localeCompare(a[0])).slice(0,6);
-  const hrsHTML = hes.length ? `<div class="hrs-box"><div class="hrs-title">📅 上班時數記錄</div><div class="hrs-grid">${hes.map(([k,v])=>`<div class="hr-entry"><div class="hr-m">${k}</div><div class="hr-v">${v}h</div></div>`).join('')}</div></div>` : '';
+function cardHTML(e){
+  const sc=SC[e.status]||SC.pending;
+  const hrs=e.hours||{};
+  const hes=Object.entries(hrs).sort((a,b)=>b[0].localeCompare(a[0])).slice(0,6);
+  const hrsHTML=hes.length?`<div class="hrs-box"><div class="hrs-title">📅 上班時數記錄</div><div class="hrs-grid">${hes.map(([k,v])=>`<div class="hr-entry"><div class="hr-m">${k}</div><div class="hr-v">${v}h</div></div>`).join('')}</div></div>`:'';
   return `<div class="card">
     <div class="card-acc" style="background:${sc.accent}"></div>
     <div class="card-body">
@@ -289,7 +278,7 @@ function cardHTML(e) {
       <div class="meta">
         <div><div class="ml">出生</div><div class="mv">${e.birth||'—'}</div></div>
         <div><div class="ml">電話</div><div class="mv">${e.phone||'—'}</div></div>
-        <div><div class="ml">學校</div><div class="mv">${e.school||'—'} ${e.dept||''}</div></div>
+        <div><div class="ml">學校</div><div class="mv">${(e.school||'—')+' '+(e.dept||'')}</div></div>
         <div><div class="ml">希望職務</div><div class="mv">${e.position||'面議'}</div></div>
       </div>
       <div class="jobs"><div class="jl">工作經歷</div>${(e.jobs||[]).map(j=>`<span class="tag">${j}</span>`).join('')}</div>
@@ -300,161 +289,159 @@ function cardHTML(e) {
   </div>`;
 }
 
-function ab(cls,label,fn) { return `<button class="act ${cls}" onclick="${fn}">${label}</button>`; }
-function actionBtns(e) {
-  const id = `'${e.id}'`, s = e.status, r = [];
-  if (s==='pending')    { r.push(ab('hire','✅ 錄取',`ss(${id},'hired')`)); r.push(ab('trn','📚 培訓',`ss(${id},'training')`)); r.push(ab('rej','❌ 不錄取',`ss(${id},'rejected')`)); }
-  else if(s==='hired')  { r.push(ab('trn','📚 培訓中',`ss(${id},'training')`)); r.push(ab('prb','🔶 試用期',`ss(${id},'probation')`)); r.push(ab('rej','❌ 解除',`ss(${id},'rejected')`)); }
-  else if(s==='training'){ r.push(ab('prb','🔶 轉試用',`ss(${id},'probation')`)); r.push(ab('hire','✅ 轉正職',`ss(${id},'hired')`)); r.push(ab('rej','❌ 淘汰',`ss(${id},'rejected')`)); }
-  else if(s==='probation'){ r.push(ab('pass','🏆 通過試用',`ss(${id},'passed')`)); r.push(ab('trn','📚 補培訓',`ss(${id},'training')`)); r.push(ab('fail','⛔ 未過試用',`ss(${id},'failed_prob')`)); }
-  else if(s==='passed') { r.push(ab('hire','✅ 繼續錄用',`ss(${id},'hired')`)); r.push(ab('fail','⛔ 不繼續',`ss(${id},'failed_prob')`)); }
-  else                  { r.push(ab('act','↩ 重新面試',`ss(${id},'pending')`)); }
+function ab(cls,label,fn){return `<button class="act ${cls}" onclick="${fn}">${label}</button>`;}
+function actionBtns(e){
+  const id=`'${e.id}'`,s=e.status,r=[];
+  if(s==='pending'){r.push(ab('hire','✅ 錄取',`ss(${id},'hired')`));r.push(ab('trn','📚 培訓',`ss(${id},'training')`));r.push(ab('rej','❌ 不錄取',`ss(${id},'rejected')`));}
+  else if(s==='hired'){r.push(ab('trn','📚 培訓中',`ss(${id},'training')`));r.push(ab('prb','🔶 試用期',`ss(${id},'probation')`));r.push(ab('rej','❌ 解除',`ss(${id},'rejected')`));}
+  else if(s==='training'){r.push(ab('prb','🔶 轉試用',`ss(${id},'probation')`));r.push(ab('hire','✅ 轉正職',`ss(${id},'hired')`));r.push(ab('rej','❌ 淘汰',`ss(${id},'rejected')`));}
+  else if(s==='probation'){r.push(ab('pass','🏆 通過試用',`ss(${id},'passed')`));r.push(ab('trn','📚 補培訓',`ss(${id},'training')`));r.push(ab('fail','⛔ 未過試用',`ss(${id},'failed_prob')`));}
+  else if(s==='passed'){r.push(ab('hire','✅ 繼續錄用',`ss(${id},'hired')`));r.push(ab('fail','⛔ 不繼續',`ss(${id},'failed_prob')`));}
+  else{r.push(ab('act','↩ 重新面試',`ss(${id},'pending')`));}
   r.push(ab('hrs','⏱ 時數',`openHM(${id})`));
   r.push(ab('edt','✏️ 編輯',`openEdit(${id})`));
   return r.join('');
 }
 
-// Firebase ops
-window.ss = async function(id, status) {
+window.ss=async function(id,status){
   syncDot('saving');
-  try { await updateDoc(doc(empCol, id), { status }); syncDot('saved'); setTimeout(()=>syncDot(''),2000); }
-  catch(e) { alert('儲存失敗：'+e.message); syncDot(''); }
+  try{await updateDoc(doc(db,'employees',id),{status});syncDot('saved');setTimeout(()=>syncDot(''),2000);}
+  catch(err){alert('儲存失敗：'+err.message);syncDot('');}
 };
 
-window.openAdd = function() {
-  editId = null;
-  document.getElementById('em-title').textContent = '＋ 新增員工';
-  ['f-name','f-birth','f-exp','f-phone','f-pos','f-note','f-jobs'].forEach(id => document.getElementById(id).value='');
-  document.getElementById('f-gender').value = '男';
-  document.getElementById('f-edu').value = '高職/高中';
-  document.getElementById('f-status').value = 'pending';
+window.openAdd=function(){
+  editId=null;
+  document.getElementById('em-title').textContent='＋ 新增員工';
+  ['f-name','f-birth','f-exp','f-phone','f-pos','f-note','f-jobs'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('f-gender').value='男';
+  document.getElementById('f-edu').value='高職/高中';
+  document.getElementById('f-status').value='pending';
   document.getElementById('em').classList.add('open');
 };
 
-window.openEdit = function(id) {
-  editId = id;
-  const e = emps.find(x => x.id === id); if (!e) return;
-  document.getElementById('em-title').textContent = '✏️ 編輯員工資料';
-  document.getElementById('f-name').value   = e.name||'';
-  document.getElementById('f-gender').value = e.gender||'男';
-  document.getElementById('f-birth').value  = e.birth||'';
-  document.getElementById('f-edu').value    = e.edu||'高職/高中';
-  document.getElementById('f-exp').value    = e.exp||'';
-  document.getElementById('f-phone').value  = e.phone||'';
-  document.getElementById('f-jobs').value   = (e.jobs||[]).join(', ');
-  document.getElementById('f-pos').value    = e.position||'';
-  document.getElementById('f-status').value = e.status||'pending';
-  document.getElementById('f-note').value   = e.note||'';
+window.openEdit=function(id){
+  editId=id;
+  const e=emps.find(x=>x.id===id);if(!e)return;
+  document.getElementById('em-title').textContent='✏️ 編輯員工資料';
+  document.getElementById('f-name').value=e.name||'';
+  document.getElementById('f-gender').value=e.gender||'男';
+  document.getElementById('f-birth').value=e.birth||'';
+  document.getElementById('f-edu').value=e.edu||'高職/高中';
+  document.getElementById('f-exp').value=e.exp||'';
+  document.getElementById('f-phone').value=e.phone||'';
+  document.getElementById('f-jobs').value=(e.jobs||[]).join(', ');
+  document.getElementById('f-pos').value=e.position||'';
+  document.getElementById('f-status').value=e.status||'pending';
+  document.getElementById('f-note').value=e.note||'';
   document.getElementById('em').classList.add('open');
 };
 
-window.closeEM = function() { document.getElementById('em').classList.remove('open'); };
+window.closeEM=function(){document.getElementById('em').classList.remove('open');};
 
-window.saveEmp = async function() {
-  const name = document.getElementById('f-name').value.trim();
-  if (!name) { alert('請輸入姓名'); return; }
+window.saveEmp=async function(){
+  const name=document.getElementById('f-name').value.trim();
+  if(!name){alert('請輸入姓名');return;}
   syncDot('saving');
-  const data = {
-    name, gender: document.getElementById('f-gender').value,
-    birth: document.getElementById('f-birth').value,
-    edu: document.getElementById('f-edu').value,
-    exp: document.getElementById('f-exp').value,
-    phone: document.getElementById('f-phone').value,
-    jobs: document.getElementById('f-jobs').value.split(',').map(j=>j.trim()).filter(Boolean),
-    position: document.getElementById('f-pos').value,
-    status: document.getElementById('f-status').value,
-    note: document.getElementById('f-note').value,
+  const data={
+    name,gender:document.getElementById('f-gender').value,
+    birth:document.getElementById('f-birth').value,
+    edu:document.getElementById('f-edu').value,
+    exp:document.getElementById('f-exp').value,
+    phone:document.getElementById('f-phone').value,
+    jobs:document.getElementById('f-jobs').value.split(',').map(j=>j.trim()).filter(Boolean),
+    position:document.getElementById('f-pos').value,
+    status:document.getElementById('f-status').value,
+    note:document.getElementById('f-note').value,
   };
-  try {
-    if (editId) {
-      await updateDoc(doc(empCol, editId), data);
-    } else {
-      const newId = 'e' + Date.now();
-      await setDoc(doc(empCol, newId), { id: newId, school:'', dept:'', hours:{}, ...data });
+  try{
+    if(editId){
+      await updateDoc(doc(db,'employees',editId),data);
+    }else{
+      const newId='e'+Date.now();
+      await setDoc(doc(db,'employees',newId),{id:newId,school:'',dept:'',hours:{},...data});
     }
-    syncDot('saved'); setTimeout(()=>syncDot(''),2000);
+    syncDot('saved');setTimeout(()=>syncDot(''),2000);
     window.closeEM();
-  } catch(err) { alert('儲存失敗：'+err.message); syncDot(''); }
+  }catch(err){alert('儲存失敗：'+err.message);syncDot('');}
 };
 
-window.openHM = function(id) {
-  hrsId = id;
-  const e = emps.find(x => x.id === id);
-  document.getElementById('hm-name').textContent = '員工：' + (e ? e.name : '');
-  const n = new Date();
-  document.getElementById('h-year').value  = n.getFullYear();
-  document.getElementById('h-month').value = n.getMonth() + 1;
-  document.getElementById('h-hrs').value   = '';
+window.openHM=function(id){
+  hrsId=id;
+  const e=emps.find(x=>x.id===id);
+  document.getElementById('hm-name').textContent='員工：'+(e?e.name:'');
+  const n=new Date();
+  document.getElementById('h-year').value=n.getFullYear();
+  document.getElementById('h-month').value=n.getMonth()+1;
+  document.getElementById('h-hrs').value='';
   document.getElementById('hm').classList.add('open');
 };
 
-window.closeHM = function() { document.getElementById('hm').classList.remove('open'); };
+window.closeHM=function(){document.getElementById('hm').classList.remove('open');};
 
-window.saveHrs = async function() {
-  const hrs = document.getElementById('h-hrs').value;
-  if (!hrs) { alert('請輸入時數'); return; }
-  const y = document.getElementById('h-year').value;
-  const m = String(document.getElementById('h-month').value).padStart(2,'0');
-  const key = `hours.${y}_${m}`;
+window.saveHrs=async function(){
+  const hrs=document.getElementById('h-hrs').value;
+  if(!hrs){alert('請輸入時數');return;}
+  const y=document.getElementById('h-year').value;
+  const m=String(document.getElementById('h-month').value).padStart(2,'0');
+  const e=emps.find(x=>x.id===hrsId);if(!e)return;
+  const newHours=Object.assign({},e.hours||{},{[`${y}/${m}`]:parseInt(hrs)});
   syncDot('saving');
-  try {
-    await updateDoc(doc(empCol, hrsId), { [key]: parseInt(hrs) });
-    syncDot('saved'); setTimeout(()=>syncDot(''),2000);
+  try{
+    await updateDoc(doc(db,'employees',hrsId),{hours:newHours});
+    syncDot('saved');setTimeout(()=>syncDot(''),2000);
     window.closeHM();
-  } catch(err) { alert('儲存失敗：'+err.message); syncDot(''); }
+  }catch(err){alert('儲存失敗：'+err.message);syncDot('');}
 };
 
-// Tabs
-document.querySelectorAll('.tab').forEach(t => {
-  t.addEventListener('click', () => {
-    curTab = t.dataset.tab;
-    document.querySelectorAll('.tab').forEach(x => x.classList.remove('on'));
+document.querySelectorAll('.tab').forEach(t=>{
+  t.addEventListener('click',()=>{
+    curTab=t.dataset.tab;
+    document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));
     t.classList.add('on');
     render();
   });
 });
-document.getElementById('em').addEventListener('click', function(ev){ if(ev.target===this) window.closeEM(); });
-document.getElementById('hm').addEventListener('click', function(ev){ if(ev.target===this) window.closeHM(); });
+document.getElementById('em').addEventListener('click',function(ev){if(ev.target===this)window.closeEM();});
+document.getElementById('hm').addEventListener('click',function(ev){if(ev.target===this)window.closeHM();});
 
-// INIT
-async function init() {
-  if (!CONFIGURED) {
-    document.getElementById('cfg-banner').classList.add('show');
-    document.getElementById('lo').classList.add('h');
-    setTimeout(() => document.getElementById('lo').style.display='none', 350);
-    return;
-  }
-  const app = initializeApp(firebaseConfig);
-  db = getFirestore(app);
-  empCol = collection(db, 'employees');
+// ── 載入 Firebase SDK 並初始化 ──
+async function init(){
+  try{
+    document.getElementById('lo-txt').textContent='載入 Firebase SDK...';
+    const fbApp=await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js');
+    const fbStore=await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
 
-  // Check if empty → seed initial data
-  const snap = await getDocs(empCol);
-  if (snap.empty) {
-    for (const e of INIT) {
-      await setDoc(doc(empCol, e.id), e);
+    document.getElementById('lo-txt').textContent='連接資料庫...';
+    const app=fbApp.initializeApp(FIREBASE_CONFIG);
+    db=fbStore.getFirestore(app);
+    col=fbStore.collection(db,'employees');
+    setDoc=fbStore.setDoc;
+    updateDoc=fbStore.updateDoc;
+    getDocs=fbStore.getDocs;
+    onSnapshot=fbStore.onSnapshot;
+    doc=fbStore.doc;
+    collection=fbStore.collection;
+
+    // 如果資料庫是空的，寫入初始資料
+    const snap=await getDocs(col);
+    if(snap.empty){
+      document.getElementById('lo-txt').textContent='初始化資料...';
+      for(const e of INIT_DATA){
+        await setDoc(fbStore.doc(db,'employees',e.id),e);
+      }
     }
-  }
 
-  // Real-time listener
-  onSnapshot(empCol, (snapshot) => {
-    emps = snapshot.docs.map(d => {
-      const data = d.data();
-      // Rebuild hours from flat fields
-      const hours = {};
-      Object.keys(data).forEach(k => {
-        if (k.startsWith('hours.')) {
-          const monthKey = k.replace('hours.', '').replace('_', '/');
-          hours[monthKey] = data[k];
-        }
-      });
-      return { ...data, hours: data.hours && typeof data.hours === 'object' && !Array.isArray(data.hours) ? data.hours : hours };
+    // 即時監聽
+    onSnapshot(col,(snapshot)=>{
+      emps=snapshot.docs.map(d=>({...d.data()}));
+      render();
+      hideLo();
     });
-    render();
-  });
 
-  document.getElementById('lo').classList.add('h');
-  setTimeout(() => document.getElementById('lo').style.display='none', 350);
+  }catch(err){
+    document.getElementById('lo-txt').textContent='連線失敗：'+err.message;
+    console.error(err);
+  }
 }
 
 init();
