@@ -7,51 +7,40 @@
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=Oswald:wght@400;600;700&display=swap');
 *{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --bg:#0d0d0d;--s1:#161616;--s2:#1e1e1e;--s3:#252525;
-  --bd:#2a2a2a;--gold:#c9a84c;--gl:#e8c96a;--gd:rgba(201,168,76,.15);
-  --tx:#f0ece4;--td:#8a8070;--tm:#555;
-  --green:#4caf7d;--red:#e05c5c;--blue:#5b9bd5;
-  --orange:#e8954a;--purple:#9b7fd4;--teal:#4ab8b8;
-}
+:root{--bg:#0d0d0d;--s1:#161616;--s2:#1e1e1e;--s3:#252525;--bd:#2a2a2a;--gold:#c9a84c;--gl:#e8c96a;--gd:rgba(201,168,76,.15);--tx:#f0ece4;--td:#8a8070;--tm:#555;--green:#4caf7d;--red:#e05c5c;--blue:#5b9bd5;--orange:#e8954a;--purple:#9b7fd4;--teal:#4ab8b8}
 body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;overflow-x:hidden}
-::-webkit-scrollbar{width:5px;height:5px}
-::-webkit-scrollbar-track{background:var(--s1)}
-::-webkit-scrollbar-thumb{background:var(--bd);border-radius:3px}
+::-webkit-scrollbar{width:5px;height:5px}::-webkit-scrollbar-track{background:var(--s1)}::-webkit-scrollbar-thumb{background:var(--bd);border-radius:3px}
 .hdr{background:linear-gradient(135deg,#0d0d0d,#1a1508);border-bottom:1px solid var(--bd);padding:14px 26px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 4px 24px rgba(0,0,0,.5)}
 .hdr-logo{font-family:'Oswald',sans-serif;font-size:19px;font-weight:700;letter-spacing:3px;color:var(--gold)}
 .hdr-sub{font-size:10px;letter-spacing:2px;color:var(--tm);margin-top:2px}
 .hdr-stats{display:flex;gap:18px}
 .stat .num{font-family:'Oswald',sans-serif;font-size:19px;font-weight:600;color:var(--gold);line-height:1;text-align:center}
 .stat .lbl{font-size:10px;letter-spacing:1px;color:var(--tm);margin-top:2px}
-.sync-dot{width:7px;height:7px;border-radius:50%;background:var(--tm);display:inline-block;margin-left:8px;vertical-align:middle;transition:background .3s}
-.sync-dot.saving{background:var(--orange);animation:pulse .7s infinite}
-.sync-dot.saved{background:var(--green)}
+.sdot{width:7px;height:7px;border-radius:50%;background:var(--tm);display:inline-block;margin-left:8px;vertical-align:middle}
+.sdot.saving{background:var(--orange);animation:pulse .7s infinite}
+.sdot.saved{background:var(--green)}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
 .main{padding:20px 26px;max-width:1500px;margin:0 auto}
 .tabs{display:flex;gap:3px;margin-bottom:16px;background:var(--s1);padding:3px;border-radius:10px;border:1px solid var(--bd);flex-wrap:wrap}
-.tab{flex:1;min-width:78px;padding:8px 9px;border:none;border-radius:7px;cursor:pointer;font-family:'Noto Sans TC',sans-serif;font-size:11px;font-weight:500;letter-spacing:.3px;transition:all .15s;white-space:nowrap;text-align:center;background:transparent;color:var(--tm)}
-.tab:hover{background:var(--s2);color:var(--tx)}
-.tab.on{background:var(--gold);color:#0d0d0d;font-weight:700}
+.tab{flex:1;min-width:78px;padding:8px 9px;border:none;border-radius:7px;cursor:pointer;font-family:'Noto Sans TC',sans-serif;font-size:11px;font-weight:500;transition:all .15s;white-space:nowrap;text-align:center;background:transparent;color:var(--tm)}
+.tab:hover{background:var(--s2);color:var(--tx)}.tab.on{background:var(--gold);color:#0d0d0d;font-weight:700}
 .tab .c{display:inline-block;background:var(--s3);border-radius:10px;padding:1px 6px;font-size:10px;margin-left:3px}
 .tab.on .c{background:rgba(0,0,0,.2)}
 .sh{display:flex;align-items:center;justify-content:space-between;margin-bottom:13px}
 .st{font-family:'Oswald',sans-serif;font-size:12px;letter-spacing:3px;color:var(--tm);text-transform:uppercase}
 .st span{color:var(--gold);margin-right:6px}
-.btn-add{background:var(--gold);color:#0d0d0d;border:none;padding:8px 15px;border-radius:7px;font-family:'Noto Sans TC',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all .15s}
-.btn-add:hover{background:var(--gl);transform:translateY(-1px)}
+.btn-add{background:var(--gold);color:#0d0d0d;border:none;padding:8px 15px;border-radius:7px;font-family:'Noto Sans TC',sans-serif;font-size:13px;font-weight:700;cursor:pointer}
+.btn-add:hover{background:var(--gl)}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:13px}
 .card{background:var(--s1);border:1px solid var(--bd);border-radius:12px;overflow:hidden;transition:all .2s}
 .card:hover{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold),0 8px 28px rgba(0,0,0,.4)}
-.card-acc{height:3px}
-.card-body{padding:14px 16px}
+.card-acc{height:3px}.card-body{padding:14px 16px}
 .card-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:9px}
 .name{font-family:'Oswald',sans-serif;font-size:18px;font-weight:600}
 .sub{font-size:11px;color:var(--td);margin-top:2px}
 .badge{padding:3px 8px;border-radius:20px;font-size:10px;font-weight:700;letter-spacing:.8px;white-space:nowrap}
 .meta{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px}
-.ml{font-size:9px;color:var(--tm);letter-spacing:1px;margin-bottom:1px}
-.mv{font-size:11px;color:var(--td);font-weight:500}
+.ml{font-size:9px;color:var(--tm);letter-spacing:1px;margin-bottom:1px}.mv{font-size:11px;color:var(--td);font-weight:500}
 .jobs{background:var(--s2);border-radius:7px;padding:7px 9px;margin-bottom:10px}
 .jl{font-size:9px;color:var(--tm);letter-spacing:1px;margin-bottom:4px}
 .tag{display:inline-block;background:var(--s3);border:1px solid var(--bd);border-radius:4px;padding:2px 6px;font-size:10px;color:var(--td);margin:1px 2px 1px 0}
@@ -60,8 +49,7 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--tx);
 .hrs-title{font-size:9px;color:var(--tm);letter-spacing:1px;margin-bottom:5px}
 .hrs-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:4px}
 .hr-entry{background:var(--s3);border-radius:4px;padding:3px 5px;text-align:center}
-.hr-m{font-size:9px;color:var(--tm)}
-.hr-v{font-size:12px;font-weight:700;color:var(--blue);font-family:'Oswald',sans-serif}
+.hr-m{font-size:9px;color:var(--tm)}.hr-v{font-size:12px;font-weight:700;color:var(--blue);font-family:'Oswald',sans-serif}
 .acts{display:flex;gap:5px;flex-wrap:wrap}
 .act{flex:1;min-width:66px;padding:5px 7px;border-radius:5px;border:1px solid var(--bd);background:var(--s2);color:var(--td);font-size:10px;font-weight:600;cursor:pointer;font-family:'Noto Sans TC',sans-serif;transition:all .15s;text-align:center;white-space:nowrap}
 .act:hover{background:var(--s3);color:var(--tx)}
@@ -78,14 +66,12 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--tx);
 .mbg.open{display:flex}
 .modal{background:var(--s1);border:1px solid var(--bd);border-radius:14px;width:510px;max-width:95vw;max-height:90vh;overflow-y:auto;padding:22px 22px 18px;box-shadow:0 24px 64px rgba(0,0,0,.7)}
 .mt{font-family:'Oswald',sans-serif;font-size:18px;letter-spacing:2px;color:var(--gold);margin-bottom:18px}
-.fr{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-bottom:11px}
-.fr.full{grid-template-columns:1fr}
+.fr{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-bottom:11px}.fr.full{grid-template-columns:1fr}
 .fg{display:flex;flex-direction:column;gap:4px}
 .fg label{font-size:10px;letter-spacing:1px;color:var(--td);text-transform:uppercase}
 .fg input,.fg select,.fg textarea{background:var(--s2);border:1px solid var(--bd);border-radius:7px;padding:7px 10px;color:var(--tx);font-family:'Noto Sans TC',sans-serif;font-size:13px;outline:none;transition:border-color .15s;width:100%}
 .fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--gold)}
-.fg select option{background:var(--s2)}
-.fg textarea{resize:vertical;min-height:58px}
+.fg select option{background:var(--s2)}.fg textarea{resize:vertical;min-height:58px}
 .ma{display:flex;justify-content:flex-end;gap:9px;margin-top:16px;padding-top:13px;border-top:1px solid var(--bd)}
 .btn-c{padding:7px 16px;border:1px solid var(--bd);background:none;color:var(--td);border-radius:7px;cursor:pointer;font-family:'Noto Sans TC',sans-serif;font-size:12px}
 .btn-c:hover{background:var(--s2)}
@@ -99,12 +85,10 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--tx);
 </style>
 </head>
 <body>
-
 <div id="lo"><div class="spin"></div><div style="font-size:12px;letter-spacing:2px;color:var(--tm)" id="lo-txt">連接資料庫中...</div></div>
-
 <div class="hdr">
   <div>
-    <div class="hdr-logo">LENNY · 員工管理 <span class="sync-dot" id="sync-dot"></span></div>
+    <div class="hdr-logo">LENNY · 員工管理 <span class="sdot" id="sdot"></span></div>
     <div class="hdr-sub">STAFF MANAGEMENT SYSTEM</div>
   </div>
   <div class="hdr-stats">
@@ -114,7 +98,6 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--tx);
     <div class="stat"><div class="num" id="s-prob">0</div><div class="lbl">試用中</div></div>
   </div>
 </div>
-
 <div class="main">
   <div class="tabs">
     <button class="tab on" data-tab="all">全部<span class="c" id="c-all">0</span></button>
@@ -158,12 +141,9 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--tx);
     <div class="fr">
       <div class="fg"><label>希望職務</label><input id="f-pos" placeholder="例：荷官"></div>
       <div class="fg"><label>狀態</label><select id="f-status">
-        <option value="pending">面試中</option>
-        <option value="hired">已錄取</option>
-        <option value="training">培訓中</option>
-        <option value="probation">試用期</option>
-        <option value="passed">過試用期</option>
-        <option value="rejected">未錄取</option>
+        <option value="pending">面試中</option><option value="hired">已錄取</option>
+        <option value="training">培訓中</option><option value="probation">試用期</option>
+        <option value="passed">過試用期</option><option value="rejected">未錄取</option>
         <option value="failed_prob">試用未過</option>
       </select></div>
     </div>
@@ -201,8 +181,10 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--tx);
   </div>
 </div>
 
+<!-- Firebase CDN (不用 ES module import，避免卡住) -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 <script>
-// ── Firebase 設定 ──────────────────────────────────
 const FIREBASE_CONFIG = {
   apiKey: "AIzaSyAQGspBuwdxrvK2nuUu4HJRVFw3FAXotkI",
   authDomain: "lenny-staff.firebaseapp.com",
@@ -211,7 +193,6 @@ const FIREBASE_CONFIG = {
   messagingSenderId: "123360483730",
   appId: "1:123360483730:web:45eb20138924fb0df2c94b"
 };
-// ──────────────────────────────────────────────────
 
 const INIT_DATA = [
   {id:'e1',name:'李育魁',gender:'男',birth:'民國57年10月30日',edu:'高職/高中',school:'大望高工',dept:'電機',exp:'10',phone:'0905322103',jobs:['王品台塑 服務生','夜店(AUA) 管理職','酒店太人 業務'],position:'',status:'pending',note:'工作年資豐富，曾任酒店業務',hours:{}},
@@ -220,38 +201,28 @@ const INIT_DATA = [
   {id:'e4',name:'黃采玥',gender:'女',birth:'民國87年3月18日',edu:'大學',school:'樹德科技大學',dept:'',exp:'8',phone:'0918208999',jobs:['永慶房仲 房仲(半年)','遊藝場 開分員(2年)','荷官(5年)'],position:'荷官',status:'pending',note:'工作地區三重/新北，早班，現職百家',hours:{}}
 ];
 
-const SC = {
-  pending:   {label:'面試中',   color:'#5b9bd5',bg:'rgba(91,155,213,.13)',  accent:'#5b9bd5'},
-  hired:     {label:'已錄取',   color:'#4caf7d',bg:'rgba(76,175,125,.13)',  accent:'#4caf7d'},
-  training:  {label:'培訓中',   color:'#4ab8b8',bg:'rgba(74,184,184,.13)',  accent:'#4ab8b8'},
-  probation: {label:'試用期',   color:'#e8954a',bg:'rgba(232,149,74,.13)',  accent:'#e8954a'},
-  passed:    {label:'過試用期', color:'#c9a84c',bg:'rgba(201,168,76,.13)',  accent:'#c9a84c'},
-  rejected:  {label:'未錄取',   color:'#e05c5c',bg:'rgba(224,92,92,.13)',   accent:'#e05c5c'},
-  failed_prob:{label:'試用未過',color:'#9b7fd4',bg:'rgba(155,127,212,.13)', accent:'#9b7fd4'},
+const SC={
+  pending:{label:'面試中',color:'#5b9bd5',bg:'rgba(91,155,213,.13)',accent:'#5b9bd5'},
+  hired:{label:'已錄取',color:'#4caf7d',bg:'rgba(76,175,125,.13)',accent:'#4caf7d'},
+  training:{label:'培訓中',color:'#4ab8b8',bg:'rgba(74,184,184,.13)',accent:'#4ab8b8'},
+  probation:{label:'試用期',color:'#e8954a',bg:'rgba(232,149,74,.13)',accent:'#e8954a'},
+  passed:{label:'過試用期',color:'#c9a84c',bg:'rgba(201,168,76,.13)',accent:'#c9a84c'},
+  rejected:{label:'未錄取',color:'#e05c5c',bg:'rgba(224,92,92,.13)',accent:'#e05c5c'},
+  failed_prob:{label:'試用未過',color:'#9b7fd4',bg:'rgba(155,127,212,.13)',accent:'#9b7fd4'}
 };
-const TLABELS = {all:'所有員工',pending:'面試中',hired:'已錄取',training:'培訓中',probation:'試用期',passed:'通過試用期',rejected:'未錄取',failed_prob:'試用未過'};
+const TL={all:'所有員工',pending:'面試中',hired:'已錄取',training:'培訓中',probation:'試用期',passed:'通過試用期',rejected:'未錄取',failed_prob:'試用未過'};
 
-let emps=[], curTab='all', editId=null, hrsId=null;
-let db, col, addDoc, setDoc, updateDoc, getDocs, onSnapshot, doc, collection;
+let emps=[],curTab='all',editId=null,hrsId=null,db,col;
 
-function syncDot(s){
-  const d=document.getElementById('sync-dot');
-  d.className='sync-dot '+(s||'');
-}
-
-function hideLo(){
-  const lo=document.getElementById('lo');
-  lo.classList.add('h');
-  setTimeout(()=>lo.style.display='none',400);
-}
-
-function filtered(){ return curTab==='all'?emps:emps.filter(e=>e.status===curTab); }
-function count(k){ return k==='all'?emps.length:emps.filter(e=>e.status===k).length; }
+function sdot(s){const d=document.getElementById('sdot');d.className='sdot '+(s||'');}
+function hideLo(){const lo=document.getElementById('lo');lo.classList.add('h');setTimeout(()=>lo.style.display='none',400);}
+function filtered(){return curTab==='all'?emps:emps.filter(e=>e.status===curTab);}
+function cnt(k){return k==='all'?emps.length:emps.filter(e=>e.status===k).length;}
 
 function render(){
-  document.getElementById('ptitle').textContent=TLABELS[curTab]||'';
+  document.getElementById('ptitle').textContent=TL[curTab]||'';
   ['all','pending','hired','training','probation','passed','rejected','failed_prob'].forEach(t=>{
-    const el=document.getElementById('c-'+t); if(el) el.textContent=count(t);
+    const el=document.getElementById('c-'+t);if(el)el.textContent=cnt(t);
   });
   document.getElementById('s-total').textContent=emps.length;
   document.getElementById('s-active').textContent=emps.filter(e=>['hired','passed'].includes(e.status)).length;
@@ -268,25 +239,20 @@ function cardHTML(e){
   const hrs=e.hours||{};
   const hes=Object.entries(hrs).sort((a,b)=>b[0].localeCompare(a[0])).slice(0,6);
   const hrsHTML=hes.length?`<div class="hrs-box"><div class="hrs-title">📅 上班時數記錄</div><div class="hrs-grid">${hes.map(([k,v])=>`<div class="hr-entry"><div class="hr-m">${k}</div><div class="hr-v">${v}h</div></div>`).join('')}</div></div>`:'';
-  return `<div class="card">
-    <div class="card-acc" style="background:${sc.accent}"></div>
-    <div class="card-body">
-      <div class="card-top">
-        <div><div class="name">${e.name}</div><div class="sub">${e.gender} · ${e.edu} · ${e.exp}年資</div></div>
-        <div class="badge" style="background:${sc.bg};color:${sc.color};border:1px solid ${sc.color}50">${sc.label}</div>
-      </div>
-      <div class="meta">
-        <div><div class="ml">出生</div><div class="mv">${e.birth||'—'}</div></div>
-        <div><div class="ml">電話</div><div class="mv">${e.phone||'—'}</div></div>
-        <div><div class="ml">學校</div><div class="mv">${(e.school||'—')+' '+(e.dept||'')}</div></div>
-        <div><div class="ml">希望職務</div><div class="mv">${e.position||'面議'}</div></div>
-      </div>
-      <div class="jobs"><div class="jl">工作經歷</div>${(e.jobs||[]).map(j=>`<span class="tag">${j}</span>`).join('')}</div>
-      ${e.note?`<div class="note">📝 ${e.note}</div>`:''}
-      ${hrsHTML}
-      <div class="acts">${actionBtns(e)}</div>
+  return `<div class="card"><div class="card-acc" style="background:${sc.accent}"></div><div class="card-body">
+    <div class="card-top"><div><div class="name">${e.name}</div><div class="sub">${e.gender} · ${e.edu} · ${e.exp}年資</div></div>
+    <div class="badge" style="background:${sc.bg};color:${sc.color};border:1px solid ${sc.color}50">${sc.label}</div></div>
+    <div class="meta">
+      <div><div class="ml">出生</div><div class="mv">${e.birth||'—'}</div></div>
+      <div><div class="ml">電話</div><div class="mv">${e.phone||'—'}</div></div>
+      <div><div class="ml">學校</div><div class="mv">${(e.school||'—')+' '+(e.dept||'')}</div></div>
+      <div><div class="ml">希望職務</div><div class="mv">${e.position||'面議'}</div></div>
     </div>
-  </div>`;
+    <div class="jobs"><div class="jl">工作經歷</div>${(e.jobs||[]).map(j=>`<span class="tag">${j}</span>`).join('')}</div>
+    ${e.note?`<div class="note">📝 ${e.note}</div>`:''}
+    ${hrsHTML}
+    <div class="acts">${actionBtns(e)}</div>
+  </div></div>`;
 }
 
 function ab(cls,label,fn){return `<button class="act ${cls}" onclick="${fn}">${label}</button>`;}
@@ -304,11 +270,10 @@ function actionBtns(e){
 }
 
 window.ss=async function(id,status){
-  syncDot('saving');
-  try{await updateDoc(doc(db,'employees',id),{status});syncDot('saved');setTimeout(()=>syncDot(''),2000);}
-  catch(err){alert('儲存失敗：'+err.message);syncDot('');}
+  sdot('saving');
+  try{await col.doc(id).update({status});sdot('saved');setTimeout(()=>sdot(''),2000);}
+  catch(err){alert('儲存失敗：'+err.message);sdot('');}
 };
-
 window.openAdd=function(){
   editId=null;
   document.getElementById('em-title').textContent='＋ 新增員工';
@@ -318,10 +283,8 @@ window.openAdd=function(){
   document.getElementById('f-status').value='pending';
   document.getElementById('em').classList.add('open');
 };
-
 window.openEdit=function(id){
-  editId=id;
-  const e=emps.find(x=>x.id===id);if(!e)return;
+  editId=id;const e=emps.find(x=>x.id===id);if(!e)return;
   document.getElementById('em-title').textContent='✏️ 編輯員工資料';
   document.getElementById('f-name').value=e.name||'';
   document.getElementById('f-gender').value=e.gender||'男';
@@ -335,115 +298,65 @@ window.openEdit=function(id){
   document.getElementById('f-note').value=e.note||'';
   document.getElementById('em').classList.add('open');
 };
-
 window.closeEM=function(){document.getElementById('em').classList.remove('open');};
-
 window.saveEmp=async function(){
   const name=document.getElementById('f-name').value.trim();
   if(!name){alert('請輸入姓名');return;}
-  syncDot('saving');
-  const data={
-    name,gender:document.getElementById('f-gender').value,
-    birth:document.getElementById('f-birth').value,
-    edu:document.getElementById('f-edu').value,
-    exp:document.getElementById('f-exp').value,
-    phone:document.getElementById('f-phone').value,
-    jobs:document.getElementById('f-jobs').value.split(',').map(j=>j.trim()).filter(Boolean),
-    position:document.getElementById('f-pos').value,
-    status:document.getElementById('f-status').value,
-    note:document.getElementById('f-note').value,
-  };
+  sdot('saving');
+  const data={name,gender:document.getElementById('f-gender').value,birth:document.getElementById('f-birth').value,edu:document.getElementById('f-edu').value,exp:document.getElementById('f-exp').value,phone:document.getElementById('f-phone').value,jobs:document.getElementById('f-jobs').value.split(',').map(j=>j.trim()).filter(Boolean),position:document.getElementById('f-pos').value,status:document.getElementById('f-status').value,note:document.getElementById('f-note').value};
   try{
-    if(editId){
-      await updateDoc(doc(db,'employees',editId),data);
-    }else{
-      const newId='e'+Date.now();
-      await setDoc(doc(db,'employees',newId),{id:newId,school:'',dept:'',hours:{},...data});
-    }
-    syncDot('saved');setTimeout(()=>syncDot(''),2000);
-    window.closeEM();
-  }catch(err){alert('儲存失敗：'+err.message);syncDot('');}
+    if(editId){await col.doc(editId).update(data);}
+    else{const newId='e'+Date.now();await col.doc(newId).set({id:newId,school:'',dept:'',hours:{},...data});}
+    sdot('saved');setTimeout(()=>sdot(''),2000);window.closeEM();
+  }catch(err){alert('儲存失敗：'+err.message);sdot('');}
 };
-
 window.openHM=function(id){
-  hrsId=id;
-  const e=emps.find(x=>x.id===id);
+  hrsId=id;const e=emps.find(x=>x.id===id);
   document.getElementById('hm-name').textContent='員工：'+(e?e.name:'');
-  const n=new Date();
-  document.getElementById('h-year').value=n.getFullYear();
-  document.getElementById('h-month').value=n.getMonth()+1;
-  document.getElementById('h-hrs').value='';
+  const n=new Date();document.getElementById('h-year').value=n.getFullYear();document.getElementById('h-month').value=n.getMonth()+1;document.getElementById('h-hrs').value='';
   document.getElementById('hm').classList.add('open');
 };
-
 window.closeHM=function(){document.getElementById('hm').classList.remove('open');};
-
 window.saveHrs=async function(){
-  const hrs=document.getElementById('h-hrs').value;
-  if(!hrs){alert('請輸入時數');return;}
+  const hrs=document.getElementById('h-hrs').value;if(!hrs){alert('請輸入時數');return;}
   const y=document.getElementById('h-year').value;
   const m=String(document.getElementById('h-month').value).padStart(2,'0');
   const e=emps.find(x=>x.id===hrsId);if(!e)return;
-  const newHours=Object.assign({},e.hours||{},{[`${y}/${m}`]:parseInt(hrs)});
-  syncDot('saving');
-  try{
-    await updateDoc(doc(db,'employees',hrsId),{hours:newHours});
-    syncDot('saved');setTimeout(()=>syncDot(''),2000);
-    window.closeHM();
-  }catch(err){alert('儲存失敗：'+err.message);syncDot('');}
+  const newHours=Object.assign({},e.hours||{},{[y+'/'+m]:parseInt(hrs)});
+  sdot('saving');
+  try{await col.doc(hrsId).update({hours:newHours});sdot('saved');setTimeout(()=>sdot(''),2000);window.closeHM();}
+  catch(err){alert('儲存失敗：'+err.message);sdot('');}
 };
 
 document.querySelectorAll('.tab').forEach(t=>{
-  t.addEventListener('click',()=>{
-    curTab=t.dataset.tab;
-    document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));
-    t.classList.add('on');
-    render();
-  });
+  t.addEventListener('click',()=>{curTab=t.dataset.tab;document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));t.classList.add('on');render();});
 });
 document.getElementById('em').addEventListener('click',function(ev){if(ev.target===this)window.closeEM();});
 document.getElementById('hm').addEventListener('click',function(ev){if(ev.target===this)window.closeHM();});
 
-// ── 載入 Firebase SDK 並初始化 ──
 async function init(){
   try{
-    document.getElementById('lo-txt').textContent='載入 Firebase SDK...';
-    const fbApp=await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js');
-    const fbStore=await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
-
-    document.getElementById('lo-txt').textContent='連接資料庫...';
-    const app=fbApp.initializeApp(FIREBASE_CONFIG);
-    db=fbStore.getFirestore(app);
-    col=fbStore.collection(db,'employees');
-    setDoc=fbStore.setDoc;
-    updateDoc=fbStore.updateDoc;
-    getDocs=fbStore.getDocs;
-    onSnapshot=fbStore.onSnapshot;
-    doc=fbStore.doc;
-    collection=fbStore.collection;
-
-    // 如果資料庫是空的，寫入初始資料
-    const snap=await getDocs(col);
+    firebase.initializeApp(FIREBASE_CONFIG);
+    db=firebase.firestore();
+    col=db.collection('employees');
+    document.getElementById('lo-txt').textContent='檢查資料庫...';
+    const snap=await col.get();
     if(snap.empty){
       document.getElementById('lo-txt').textContent='初始化資料...';
-      for(const e of INIT_DATA){
-        await setDoc(fbStore.doc(db,'employees',e.id),e);
-      }
+      const batch=db.batch();
+      INIT_DATA.forEach(e=>batch.set(col.doc(e.id),e));
+      await batch.commit();
     }
-
-    // 即時監聽
-    onSnapshot(col,(snapshot)=>{
-      emps=snapshot.docs.map(d=>({...d.data()}));
+    col.onSnapshot(snapshot=>{
+      emps=snapshot.docs.map(d=>d.data());
       render();
       hideLo();
     });
-
   }catch(err){
-    document.getElementById('lo-txt').textContent='連線失敗：'+err.message;
+    document.getElementById('lo-txt').textContent='❌ 連線失敗：'+err.message;
     console.error(err);
   }
 }
-
 init();
 </script>
 </body>
