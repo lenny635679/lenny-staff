@@ -115,84 +115,40 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--tx);
   </div>
   <div class="grid" id="grid"></div>
 </div>
+<div class="mbg" id="em"><div class="modal">
+  <div class="mt" id="em-title">新增員工</div>
+  <div class="fr"><div class="fg"><label>姓名</label><input id="f-name" placeholder="輸入姓名"></div><div class="fg"><label>性別</label><select id="f-gender"><option>男</option><option>女</option></select></div></div>
+  <div class="fr"><div class="fg"><label>出生日期</label><input id="f-birth" placeholder="例：民國87年3月18日"></div><div class="fg"><label>學歷</label><select id="f-edu"><option>博士</option><option>碩士</option><option>大學</option><option>專科</option><option selected>高職/高中</option><option>國中以下</option><option>其他</option></select></div></div>
+  <div class="fr"><div class="fg"><label>工作年資（年）</label><input id="f-exp" placeholder="例：8"></div><div class="fg"><label>聯絡電話</label><input id="f-phone" placeholder="0912-345-678"></div></div>
+  <div class="fr full"><div class="fg"><label>過去工作經歷（逗號分隔）</label><textarea id="f-jobs" placeholder="例：王品服務生, 夜店管理職, 酒店業務"></textarea></div></div>
+  <div class="fr"><div class="fg"><label>希望職務</label><input id="f-pos" placeholder="例：荷官"></div><div class="fg"><label>狀態</label><select id="f-status"><option value="pending">面試中</option><option value="hired">已錄取</option><option value="training">培訓中</option><option value="probation">試用期</option><option value="passed">過試用期</option><option value="rejected">未錄取</option><option value="failed_prob">試用未過</option></select></div></div>
+  <div class="fr full"><div class="fg"><label>備註</label><textarea id="f-note" placeholder="面試備註、特殊技能等..."></textarea></div></div>
+  <div class="ma"><button class="btn-c" onclick="closeEM()">取消</button><button class="btn-s" onclick="saveEmp()">儲存</button></div>
+</div></div>
+<div class="mbg" id="hm"><div class="modal">
+  <div class="mt">⏱ 記錄上班時數</div>
+  <div style="font-size:13px;color:var(--td);margin-bottom:16px" id="hm-name"></div>
+  <div class="fr"><div class="fg"><label>年份</label><input type="number" id="h-year"></div><div class="fg"><label>月份</label><select id="h-month"><option value="1">1月</option><option value="2">2月</option><option value="3">3月</option><option value="4">4月</option><option value="5">5月</option><option value="6">6月</option><option value="7">7月</option><option value="8">8月</option><option value="9">9月</option><option value="10">10月</option><option value="11">11月</option><option value="12">12月</option></select></div></div>
+  <div class="fr full"><div class="fg"><label>上班時數（小時）</label><input type="number" id="h-hrs" placeholder="例：168" min="0" max="744"></div></div>
+  <div class="ma"><button class="btn-c" onclick="closeHM()">取消</button><button class="btn-s" onclick="saveHrs()">儲存時數</button></div>
+</div></div>
 
-<!-- EDIT MODAL -->
-<div class="mbg" id="em">
-  <div class="modal">
-    <div class="mt" id="em-title">新增員工</div>
-    <div class="fr">
-      <div class="fg"><label>姓名</label><input id="f-name" placeholder="輸入姓名"></div>
-      <div class="fg"><label>性別</label><select id="f-gender"><option>男</option><option>女</option></select></div>
-    </div>
-    <div class="fr">
-      <div class="fg"><label>出生日期</label><input id="f-birth" placeholder="例：民國87年3月18日"></div>
-      <div class="fg"><label>學歷</label><select id="f-edu">
-        <option>博士</option><option>碩士</option><option>大學</option><option>專科</option>
-        <option selected>高職/高中</option><option>國中以下</option><option>其他</option>
-      </select></div>
-    </div>
-    <div class="fr">
-      <div class="fg"><label>工作年資（年）</label><input id="f-exp" placeholder="例：8"></div>
-      <div class="fg"><label>聯絡電話</label><input id="f-phone" placeholder="0912-345-678"></div>
-    </div>
-    <div class="fr full">
-      <div class="fg"><label>過去工作經歷（逗號分隔）</label><textarea id="f-jobs" placeholder="例：王品服務生, 夜店管理職, 酒店業務"></textarea></div>
-    </div>
-    <div class="fr">
-      <div class="fg"><label>希望職務</label><input id="f-pos" placeholder="例：荷官"></div>
-      <div class="fg"><label>狀態</label><select id="f-status">
-        <option value="pending">面試中</option><option value="hired">已錄取</option>
-        <option value="training">培訓中</option><option value="probation">試用期</option>
-        <option value="passed">過試用期</option><option value="rejected">未錄取</option>
-        <option value="failed_prob">試用未過</option>
-      </select></div>
-    </div>
-    <div class="fr full">
-      <div class="fg"><label>備註</label><textarea id="f-note" placeholder="面試備註、特殊技能等..."></textarea></div>
-    </div>
-    <div class="ma">
-      <button class="btn-c" onclick="closeEM()">取消</button>
-      <button class="btn-s" onclick="saveEmp()">儲存</button>
-    </div>
-  </div>
-</div>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, collection, doc, setDoc, updateDoc, getDocs, onSnapshot, writeBatch } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-<!-- HOURS MODAL -->
-<div class="mbg" id="hm">
-  <div class="modal">
-    <div class="mt">⏱ 記錄上班時數</div>
-    <div style="font-size:13px;color:var(--td);margin-bottom:16px" id="hm-name"></div>
-    <div class="fr">
-      <div class="fg"><label>年份</label><input type="number" id="h-year"></div>
-      <div class="fg"><label>月份</label><select id="h-month">
-        <option value="1">1月</option><option value="2">2月</option><option value="3">3月</option>
-        <option value="4">4月</option><option value="5">5月</option><option value="6">6月</option>
-        <option value="7">7月</option><option value="8">8月</option><option value="9">9月</option>
-        <option value="10">10月</option><option value="11">11月</option><option value="12">12月</option>
-      </select></div>
-    </div>
-    <div class="fr full">
-      <div class="fg"><label>上班時數（小時）</label><input type="number" id="h-hrs" placeholder="例：168" min="0" max="744"></div>
-    </div>
-    <div class="ma">
-      <button class="btn-c" onclick="closeHM()">取消</button>
-      <button class="btn-s" onclick="saveHrs()">儲存時數</button>
-    </div>
-  </div>
-</div>
-
-<!-- Firebase CDN (不用 ES module import，避免卡住) -->
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-<script>
-const FIREBASE_CONFIG = {
+const app = initializeApp({
   apiKey: "AIzaSyAQGspBuwdxrvK2nuUu4HJRVFw3FAXotkI",
   authDomain: "lenny-staff.firebaseapp.com",
   projectId: "lenny-staff",
   storageBucket: "lenny-staff.firebasestorage.app",
   messagingSenderId: "123360483730",
   appId: "1:123360483730:web:45eb20138924fb0df2c94b"
-};
+});
+
+// ★ 關鍵：指定資料庫名稱為 'lenny-staff' 而不是預設的 '(default)'
+const db = getFirestore(app, 'lenny-staff');
+const col = collection(db, 'employees');
 
 const INIT_DATA = [
   {id:'e1',name:'李育魁',gender:'男',birth:'民國57年10月30日',edu:'高職/高中',school:'大望高工',dept:'電機',exp:'10',phone:'0905322103',jobs:['王品台塑 服務生','夜店(AUA) 管理職','酒店太人 業務'],position:'',status:'pending',note:'工作年資豐富，曾任酒店業務',hours:{}},
@@ -201,60 +157,39 @@ const INIT_DATA = [
   {id:'e4',name:'黃采玥',gender:'女',birth:'民國87年3月18日',edu:'大學',school:'樹德科技大學',dept:'',exp:'8',phone:'0918208999',jobs:['永慶房仲 房仲(半年)','遊藝場 開分員(2年)','荷官(5年)'],position:'荷官',status:'pending',note:'工作地區三重/新北，早班，現職百家',hours:{}}
 ];
 
-const SC={
-  pending:{label:'面試中',color:'#5b9bd5',bg:'rgba(91,155,213,.13)',accent:'#5b9bd5'},
-  hired:{label:'已錄取',color:'#4caf7d',bg:'rgba(76,175,125,.13)',accent:'#4caf7d'},
-  training:{label:'培訓中',color:'#4ab8b8',bg:'rgba(74,184,184,.13)',accent:'#4ab8b8'},
-  probation:{label:'試用期',color:'#e8954a',bg:'rgba(232,149,74,.13)',accent:'#e8954a'},
-  passed:{label:'過試用期',color:'#c9a84c',bg:'rgba(201,168,76,.13)',accent:'#c9a84c'},
-  rejected:{label:'未錄取',color:'#e05c5c',bg:'rgba(224,92,92,.13)',accent:'#e05c5c'},
-  failed_prob:{label:'試用未過',color:'#9b7fd4',bg:'rgba(155,127,212,.13)',accent:'#9b7fd4'}
-};
+const SC={pending:{label:'面試中',color:'#5b9bd5',bg:'rgba(91,155,213,.13)',accent:'#5b9bd5'},hired:{label:'已錄取',color:'#4caf7d',bg:'rgba(76,175,125,.13)',accent:'#4caf7d'},training:{label:'培訓中',color:'#4ab8b8',bg:'rgba(74,184,184,.13)',accent:'#4ab8b8'},probation:{label:'試用期',color:'#e8954a',bg:'rgba(232,149,74,.13)',accent:'#e8954a'},passed:{label:'過試用期',color:'#c9a84c',bg:'rgba(201,168,76,.13)',accent:'#c9a84c'},rejected:{label:'未錄取',color:'#e05c5c',bg:'rgba(224,92,92,.13)',accent:'#e05c5c'},failed_prob:{label:'試用未過',color:'#9b7fd4',bg:'rgba(155,127,212,.13)',accent:'#9b7fd4'}};
 const TL={all:'所有員工',pending:'面試中',hired:'已錄取',training:'培訓中',probation:'試用期',passed:'通過試用期',rejected:'未錄取',failed_prob:'試用未過'};
 
-let emps=[],curTab='all',editId=null,hrsId=null,db,col;
+let emps=[],curTab='all',editId=null,hrsId=null;
 
-function sdot(s){const d=document.getElementById('sdot');d.className='sdot '+(s||'');}
+function sdot(s){document.getElementById('sdot').className='sdot '+(s||'');}
 function hideLo(){const lo=document.getElementById('lo');lo.classList.add('h');setTimeout(()=>lo.style.display='none',400);}
 function filtered(){return curTab==='all'?emps:emps.filter(e=>e.status===curTab);}
 function cnt(k){return k==='all'?emps.length:emps.filter(e=>e.status===k).length;}
 
 function render(){
   document.getElementById('ptitle').textContent=TL[curTab]||'';
-  ['all','pending','hired','training','probation','passed','rejected','failed_prob'].forEach(t=>{
-    const el=document.getElementById('c-'+t);if(el)el.textContent=cnt(t);
-  });
+  ['all','pending','hired','training','probation','passed','rejected','failed_prob'].forEach(t=>{const el=document.getElementById('c-'+t);if(el)el.textContent=cnt(t);});
   document.getElementById('s-total').textContent=emps.length;
   document.getElementById('s-active').textContent=emps.filter(e=>['hired','passed'].includes(e.status)).length;
   document.getElementById('s-train').textContent=emps.filter(e=>e.status==='training').length;
   document.getElementById('s-prob').textContent=emps.filter(e=>e.status==='probation').length;
-  const list=filtered();
-  const g=document.getElementById('grid');
+  const list=filtered(),g=document.getElementById('grid');
   if(!list.length){g.innerHTML='<div class="empty"><div style="font-size:34px;margin-bottom:10px">📋</div><div style="font-size:13px;letter-spacing:1px">此區尚無員工資料</div></div>';return;}
   g.innerHTML=list.map(cardHTML).join('');
 }
 
 function cardHTML(e){
-  const sc=SC[e.status]||SC.pending;
-  const hrs=e.hours||{};
-  const hes=Object.entries(hrs).sort((a,b)=>b[0].localeCompare(a[0])).slice(0,6);
+  const sc=SC[e.status]||SC.pending,hrs=e.hours||{},hes=Object.entries(hrs).sort((a,b)=>b[0].localeCompare(a[0])).slice(0,6);
   const hrsHTML=hes.length?`<div class="hrs-box"><div class="hrs-title">📅 上班時數記錄</div><div class="hrs-grid">${hes.map(([k,v])=>`<div class="hr-entry"><div class="hr-m">${k}</div><div class="hr-v">${v}h</div></div>`).join('')}</div></div>`:'';
   return `<div class="card"><div class="card-acc" style="background:${sc.accent}"></div><div class="card-body">
     <div class="card-top"><div><div class="name">${e.name}</div><div class="sub">${e.gender} · ${e.edu} · ${e.exp}年資</div></div>
     <div class="badge" style="background:${sc.bg};color:${sc.color};border:1px solid ${sc.color}50">${sc.label}</div></div>
-    <div class="meta">
-      <div><div class="ml">出生</div><div class="mv">${e.birth||'—'}</div></div>
-      <div><div class="ml">電話</div><div class="mv">${e.phone||'—'}</div></div>
-      <div><div class="ml">學校</div><div class="mv">${(e.school||'—')+' '+(e.dept||'')}</div></div>
-      <div><div class="ml">希望職務</div><div class="mv">${e.position||'面議'}</div></div>
-    </div>
+    <div class="meta"><div><div class="ml">出生</div><div class="mv">${e.birth||'—'}</div></div><div><div class="ml">電話</div><div class="mv">${e.phone||'—'}</div></div><div><div class="ml">學校</div><div class="mv">${(e.school||'—')+' '+(e.dept||'')}</div></div><div><div class="ml">希望職務</div><div class="mv">${e.position||'面議'}</div></div></div>
     <div class="jobs"><div class="jl">工作經歷</div>${(e.jobs||[]).map(j=>`<span class="tag">${j}</span>`).join('')}</div>
-    ${e.note?`<div class="note">📝 ${e.note}</div>`:''}
-    ${hrsHTML}
-    <div class="acts">${actionBtns(e)}</div>
-  </div></div>`;
+    ${e.note?`<div class="note">📝 ${e.note}</div>`:''}${hrsHTML}
+    <div class="acts">${actionBtns(e)}</div></div></div>`;
 }
-
 function ab(cls,label,fn){return `<button class="act ${cls}" onclick="${fn}">${label}</button>`;}
 function actionBtns(e){
   const id=`'${e.id}'`,s=e.status,r=[];
@@ -264,100 +199,42 @@ function actionBtns(e){
   else if(s==='probation'){r.push(ab('pass','🏆 通過試用',`ss(${id},'passed')`));r.push(ab('trn','📚 補培訓',`ss(${id},'training')`));r.push(ab('fail','⛔ 未過試用',`ss(${id},'failed_prob')`));}
   else if(s==='passed'){r.push(ab('hire','✅ 繼續錄用',`ss(${id},'hired')`));r.push(ab('fail','⛔ 不繼續',`ss(${id},'failed_prob')`));}
   else{r.push(ab('act','↩ 重新面試',`ss(${id},'pending')`));}
-  r.push(ab('hrs','⏱ 時數',`openHM(${id})`));
-  r.push(ab('edt','✏️ 編輯',`openEdit(${id})`));
+  r.push(ab('hrs','⏱ 時數',`openHM(${id})`));r.push(ab('edt','✏️ 編輯',`openEdit(${id})`));
   return r.join('');
 }
 
-window.ss=async function(id,status){
-  sdot('saving');
-  try{await col.doc(id).update({status});sdot('saved');setTimeout(()=>sdot(''),2000);}
-  catch(err){alert('儲存失敗：'+err.message);sdot('');}
-};
-window.openAdd=function(){
-  editId=null;
-  document.getElementById('em-title').textContent='＋ 新增員工';
-  ['f-name','f-birth','f-exp','f-phone','f-pos','f-note','f-jobs'].forEach(id=>document.getElementById(id).value='');
-  document.getElementById('f-gender').value='男';
-  document.getElementById('f-edu').value='高職/高中';
-  document.getElementById('f-status').value='pending';
-  document.getElementById('em').classList.add('open');
-};
-window.openEdit=function(id){
-  editId=id;const e=emps.find(x=>x.id===id);if(!e)return;
-  document.getElementById('em-title').textContent='✏️ 編輯員工資料';
-  document.getElementById('f-name').value=e.name||'';
-  document.getElementById('f-gender').value=e.gender||'男';
-  document.getElementById('f-birth').value=e.birth||'';
-  document.getElementById('f-edu').value=e.edu||'高職/高中';
-  document.getElementById('f-exp').value=e.exp||'';
-  document.getElementById('f-phone').value=e.phone||'';
-  document.getElementById('f-jobs').value=(e.jobs||[]).join(', ');
-  document.getElementById('f-pos').value=e.position||'';
-  document.getElementById('f-status').value=e.status||'pending';
-  document.getElementById('f-note').value=e.note||'';
-  document.getElementById('em').classList.add('open');
-};
-window.closeEM=function(){document.getElementById('em').classList.remove('open');};
-window.saveEmp=async function(){
-  const name=document.getElementById('f-name').value.trim();
-  if(!name){alert('請輸入姓名');return;}
-  sdot('saving');
-  const data={name,gender:document.getElementById('f-gender').value,birth:document.getElementById('f-birth').value,edu:document.getElementById('f-edu').value,exp:document.getElementById('f-exp').value,phone:document.getElementById('f-phone').value,jobs:document.getElementById('f-jobs').value.split(',').map(j=>j.trim()).filter(Boolean),position:document.getElementById('f-pos').value,status:document.getElementById('f-status').value,note:document.getElementById('f-note').value};
-  try{
-    if(editId){await col.doc(editId).update(data);}
-    else{const newId='e'+Date.now();await col.doc(newId).set({id:newId,school:'',dept:'',hours:{},...data});}
-    sdot('saved');setTimeout(()=>sdot(''),2000);window.closeEM();
-  }catch(err){alert('儲存失敗：'+err.message);sdot('');}
-};
-window.openHM=function(id){
-  hrsId=id;const e=emps.find(x=>x.id===id);
-  document.getElementById('hm-name').textContent='員工：'+(e?e.name:'');
-  const n=new Date();document.getElementById('h-year').value=n.getFullYear();document.getElementById('h-month').value=n.getMonth()+1;document.getElementById('h-hrs').value='';
-  document.getElementById('hm').classList.add('open');
-};
-window.closeHM=function(){document.getElementById('hm').classList.remove('open');};
-window.saveHrs=async function(){
-  const hrs=document.getElementById('h-hrs').value;if(!hrs){alert('請輸入時數');return;}
-  const y=document.getElementById('h-year').value;
-  const m=String(document.getElementById('h-month').value).padStart(2,'0');
-  const e=emps.find(x=>x.id===hrsId);if(!e)return;
-  const newHours=Object.assign({},e.hours||{},{[y+'/'+m]:parseInt(hrs)});
-  sdot('saving');
-  try{await col.doc(hrsId).update({hours:newHours});sdot('saved');setTimeout(()=>sdot(''),2000);window.closeHM();}
-  catch(err){alert('儲存失敗：'+err.message);sdot('');}
-};
+window.ss=async(id,status)=>{sdot('saving');try{await updateDoc(doc(db,'employees',id),{status});sdot('saved');setTimeout(()=>sdot(''),2000);}catch(err){alert('錯誤：'+err.message);sdot('');}};
+window.openAdd=()=>{editId=null;document.getElementById('em-title').textContent='＋ 新增員工';['f-name','f-birth','f-exp','f-phone','f-pos','f-note','f-jobs'].forEach(id=>document.getElementById(id).value='');document.getElementById('f-gender').value='男';document.getElementById('f-edu').value='高職/高中';document.getElementById('f-status').value='pending';document.getElementById('em').classList.add('open');};
+window.openEdit=(id)=>{editId=id;const e=emps.find(x=>x.id===id);if(!e)return;document.getElementById('em-title').textContent='✏️ 編輯員工資料';document.getElementById('f-name').value=e.name||'';document.getElementById('f-gender').value=e.gender||'男';document.getElementById('f-birth').value=e.birth||'';document.getElementById('f-edu').value=e.edu||'高職/高中';document.getElementById('f-exp').value=e.exp||'';document.getElementById('f-phone').value=e.phone||'';document.getElementById('f-jobs').value=(e.jobs||[]).join(', ');document.getElementById('f-pos').value=e.position||'';document.getElementById('f-status').value=e.status||'pending';document.getElementById('f-note').value=e.note||'';document.getElementById('em').classList.add('open');};
+window.closeEM=()=>{document.getElementById('em').classList.remove('open');};
+window.saveEmp=async()=>{const name=document.getElementById('f-name').value.trim();if(!name){alert('請輸入姓名');return;}sdot('saving');const data={name,gender:document.getElementById('f-gender').value,birth:document.getElementById('f-birth').value,edu:document.getElementById('f-edu').value,exp:document.getElementById('f-exp').value,phone:document.getElementById('f-phone').value,jobs:document.getElementById('f-jobs').value.split(',').map(j=>j.trim()).filter(Boolean),position:document.getElementById('f-pos').value,status:document.getElementById('f-status').value,note:document.getElementById('f-note').value};try{if(editId){await updateDoc(doc(db,'employees',editId),data);}else{const nid='e'+Date.now();await setDoc(doc(db,'employees',nid),{id:nid,school:'',dept:'',hours:{},...data});}sdot('saved');setTimeout(()=>sdot(''),2000);window.closeEM();}catch(err){alert('錯誤：'+err.message);sdot('');}};
+window.openHM=(id)=>{hrsId=id;const e=emps.find(x=>x.id===id);document.getElementById('hm-name').textContent='員工：'+(e?e.name:'');const n=new Date();document.getElementById('h-year').value=n.getFullYear();document.getElementById('h-month').value=n.getMonth()+1;document.getElementById('h-hrs').value='';document.getElementById('hm').classList.add('open');};
+window.closeHM=()=>{document.getElementById('hm').classList.remove('open');};
+window.saveHrs=async()=>{const hrs=document.getElementById('h-hrs').value;if(!hrs){alert('請輸入時數');return;}const y=document.getElementById('h-year').value,m=String(document.getElementById('h-month').value).padStart(2,'0');const e=emps.find(x=>x.id===hrsId);if(!e)return;const nh=Object.assign({},e.hours||{},{[y+'/'+m]:parseInt(hrs)});sdot('saving');try{await updateDoc(doc(db,'employees',hrsId),{hours:nh});sdot('saved');setTimeout(()=>sdot(''),2000);window.closeHM();}catch(err){alert('錯誤：'+err.message);sdot('');}};
 
-document.querySelectorAll('.tab').forEach(t=>{
-  t.addEventListener('click',()=>{curTab=t.dataset.tab;document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));t.classList.add('on');render();});
-});
+document.querySelectorAll('.tab').forEach(t=>{t.addEventListener('click',()=>{curTab=t.dataset.tab;document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));t.classList.add('on');render();});});
 document.getElementById('em').addEventListener('click',function(ev){if(ev.target===this)window.closeEM();});
 document.getElementById('hm').addEventListener('click',function(ev){if(ev.target===this)window.closeHM();});
 
-async function init(){
-  try{
-    firebase.initializeApp(FIREBASE_CONFIG);
-    db=firebase.firestore();db.settings({databaseId:'lenny-staff'});
-    col=db.collection('employees');
-    document.getElementById('lo-txt').textContent='檢查資料庫...';
-    const snap=await col.get();
-    if(snap.empty){
-      document.getElementById('lo-txt').textContent='初始化資料...';
-      const batch=db.batch();
-      INIT_DATA.forEach(e=>batch.set(col.doc(e.id),e));
-      await batch.commit();
-    }
-    col.onSnapshot(snapshot=>{
-      emps=snapshot.docs.map(d=>d.data());
-      render();
-      hideLo();
-    });
-  }catch(err){
-    document.getElementById('lo-txt').textContent='❌ 連線失敗：'+err.message;
-    console.error(err);
+// INIT
+try {
+  document.getElementById('lo-txt').textContent='檢查資料庫...';
+  const snap = await getDocs(col);
+  if(snap.empty){
+    document.getElementById('lo-txt').textContent='初始化資料...';
+    const batch = writeBatch(db);
+    INIT_DATA.forEach(e => batch.set(doc(db,'employees',e.id), e));
+    await batch.commit();
   }
+  onSnapshot(col, (snapshot) => {
+    emps = snapshot.docs.map(d => d.data());
+    render();
+    hideLo();
+  });
+} catch(err) {
+  document.getElementById('lo-txt').textContent='❌ '+err.message;
+  console.error(err);
 }
-init();
 </script>
 </body>
 </html>
